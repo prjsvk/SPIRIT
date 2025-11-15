@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Focus Arena – Spirit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="navbar.css">
+  <style>
+    header {
+      background: linear-gradient(135deg, #083464, #3f37c9);
+      color: white;
+      padding: 0 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Montserrat', sans-serif;
+      align-items: center;
+      max-width: 2000px;
+      margin: 0 auto;
+      padding: 0.5;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+    .logo i {
+      margin-right: 0.5rem;
+      color: #f72585;
+    }
+    .nav-links {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .signout-button {
+      background-color: #08bcfc;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .signout-button:hover {
+      background-color: #1084f4;
+      transform: scale(1.05);
+    }
+    .nav-links li {
+      margin-left: 2rem;
+    }
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    .nav-links a:hover {
+      color: #f72585;
+    }
+    .nav-links a.active {
+      color: #f72585;
+    }
+
+    
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(270deg, #0f0c29, #302b63, #24243e);
+      background-size: 600% 600%;
+      animation: gradientShift 10s ease infinite;
+      font-family: 'Orbitron', sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      align-items: center;
+      padding-top: 80px; /* Adjusted for fixed header */
+    }
+    @keyframes gradientShift {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    .container {
+      max-width: 800px;
+      width: 90%;
+      text-align: center;
+      padding: 2rem;
+      background: rgba(15, 12, 41, 0.7);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      margin: 2rem auto;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #08bcfc;
+      text-shadow: 0 0 10px rgba(8, 188, 252, 0.5);
+    }
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .focus-header{ text-align:center; margin-bottom:12px }
+    .focus-header .lead{ color: rgba(255,255,255,0.8); margin-top:6px }
+    .focus-grid{ display:grid; grid-template-columns: 1fr 340px; gap:20px; align-items:start; }
+    @media (max-width: 900px){ .focus-grid{ grid-template-columns: 1fr; } .control-panel{ order:2 } }
+    .video-card{ position:relative; width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#000; box-shadow:0 8px 30px rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.04) }
+    .video-card video, .video-card canvas{ position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
+    .info-section{ margin-top:16px; padding:12px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px solid rgba(255,255,255,0.05); }
+    .video-overlay{ position:absolute; left:12px; top:12px; z-index:5 }
+    .focus-score{ background:rgba(0,0,0,0.5); padding:6px 10px; border-radius:8px; font-weight:600 }
+    .control-panel{ background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); padding:16px; border-radius:12px; color:#fff; border:1px solid rgba(255,255,255,0.03) }
+    .control-panel label{ display:block; margin-bottom:6px }
+    .control-panel input[type=number]{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.03); color:white }
+    .btn-row{ margin-top:10px; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; }
+    button.primary{ background: linear-gradient(135deg,#06b,#0366b0); color:#fff; border:none; padding:10px 14px; border-radius:8px; flex:1; min-width:140px; }
+    button.warning{ background: linear-gradient(135deg,#ffb703,#ff9800); color:#04243b; border:none; padding:10px 14px; border-radius:8px; flex:1; min-width:140px; }
+    .timer-card{ margin-top:12px; text-align:center }
+    .timer{ font-size:3.2rem; color:#08bcfc; margin-bottom:8px }
+    .status{ background: rgba(255,255,255,0.03); padding:8px; border-radius:8px }
+    .progress{ height:10px; background: rgba(255,255,255,0.04); border-radius:999px; margin-top:10px; overflow:hidden }
+    .progress-inner{ height:100%; background: linear-gradient(90deg,#06b,#08bcfc); width:0%; transition:width 300ms ease }
+    .tips{ margin-top:14px; font-size:0.95rem }
+    .tips ul{ padding-left:18px; margin:6px 0 }
+    label {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    input {
+      padding: 12px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      width: 80px;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    button {
+      padding: 12px 30px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      margin: 10px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #08bcfc, #0062ff);
+      color: white;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(8, 188, 252, 0.3);
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(8, 188, 252, 0.4);
+    }
+    #timerDisplay {
+      font-size: 3.56rem;
+      margin: 1.5rem 0;
+      font-weight: bold;
+      color: #08bcfc;
+      text-shadow: 0 0 15px rgba(8, 188, 252, 0.7);
+      letter-spacing: 2px;
+    }
+    #status {
+      margin-top: 1.5rem;
+      font-size: 1.3rem;
+      padding: 1rem;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      display: inline-block;
+    }
+    .video-container {
+      margin-top: 2rem;
+      position: relative;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    video, canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      margin: 0 auto;
+    }
+    .nav-links li {
+      margin-left: var(--space-lg);
+    }
+    #quotes-container {
+      height: 400px;
+      background: linear-gradient(135deg, #ffffff 0%, #e6f7ff 100%);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    #quote-text {
+      font-size: 28px;
+      color: #0a3a5e;
+      text-align: center;
+      line-height: 1.8;
+      font-weight: 600;
+    }
+
+    #quote-author {
+      font-size: 18px;
+      color: #0a5a8e;
+      text-align: right;
+      margin-top: 20px;
+      font-style: italic;
+      font-weight: 500;
+    }
+    @media (max-width: 768px) {
+      .container {
+        width: 95%;
+        padding: 1.5rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      #timerDisplay {
+        font-size: 2.67rem;
+      }
+      
+      .input-group {
+        flex-direction: column;
+      }
+      
+      .navbar {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <i class="ri-leaf-fill"></i>
+      <span>Spirit</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="home.html">Dashboard</a></li>
+      <li><a class="active" href="FocusArena.html">Focus</a></li>
+      <li><a href="spiritradio.html">Radio</a></li>
+      <li><a href="mindmap.html">Mind Map</a></li>
+      <li><a href="chat.html">Chat</a></li>
+      <li><button onclick="location.href='index.html'" class="signout-button">Sign Out</button></li>
+    </ul>
+  </nav>
+</header>
+<body>
+  <div class="container">
+    <div class="focus-header">
+      <h1>Focus Arena <i class="ri-fire-fill" style="color: #ff6b6b;"></i></h1>
+      <p class="lead">Stay in the zone — camera-based presence checks help you build better habits.</p>
+    </div>
+
+    <div class="focus-grid">
+      <div class="video-panel">
+        <div class="video-card">
+          <video id="video" autoplay muted playsinline style="width:100%; height:100%; display:block; background: #000; object-fit:cover;"></video>
+          <canvas id="canvas" style="position:absolute; left:0; top:0; pointer-events:none;"></canvas>
+          <!-- video overlay reserved for indicators -->
+        </div>
+        <div class="info-section">
+          <p id="motivationalQuote" style="font-size:0.9rem; margin:0; color:rgba(255,255,255,0.7); font-style:italic;">Ready to focus?</p>
+        </div>
+      </div>
+
+      <aside class="control-panel">
+        <div class="controls">
+          <label for="minutes">Session length (min)</label>
+          <!-- Default to 0 as requested; user can set desired minutes before starting -->
+          <input type="number" id="minutes" min="0" max="120" value="0">
+          <div class="btn-row">
+            <button id="startBtn" class="primary">Start</button>
+            <button id="pauseBtn" class="warning" style="display:none;">Pause</button>
+            <button id="resumeBtn" class="primary" style="display:none;">Resume</button>
+          </div>
+        </div>
+
+        <div class="timer-card">
+          <div id="timerDisplay" class="timer">00:00</div>
+          <div id="status" class="status">Ready when you are</div>
+          <div class="progress"><div id="progressBar" class="progress-inner" style="width:0%"></div></div>
+        </div>
+
+        <div class="tips">
+          <h4>Tips</h4>
+          <ul>
+            <li>Keep your camera at eye level.</li>
+            <li>Minimize distractions — mute notifications.</li>
+            <li>Short breaks help retention.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+  <!-- overlays removed per user request: no automatic warnings or enforced pauses -->
+  <script src="focusArena.js"></script>
+</body>
+</html> 

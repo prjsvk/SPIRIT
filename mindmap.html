@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChronoMap - Spirit Mind Mapper</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Montserrat:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="navbar.css" />
+
+    <!-- CSS -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0f172a;
+            color: white;
+        }
+           
+
+        .mindmap-container {
+            padding: 2rem;
+            position: relative;
+            height: calc(100vh - 80px);
+            overflow: hidden;
+        }
+
+        .toolbar {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .toolbar button {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .toolbar button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .toolbar button:active {
+            transform: translateY(0);
+        }
+
+        .toolbar button.active {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .drawing-tools {
+            display: none;
+            margin-bottom: 1rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 1rem;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transform: translateY(-10px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .drawing-tools.show {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .tool-group {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .tool-group button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.25rem;
+            border-radius: 0.875rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+            font-size: 0.9rem;
+            min-width: 100px;
+            justify-content: center;
+        }
+
+        .tool-group button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .tool-group button:hover::before {
+            left: 100%;
+        }
+
+        .tool-group button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .tool-group button:active {
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.8);
+        }
+
+        .tool-group button.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .tool-group button.active:hover {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.8);
+        }
+
+        /* Special styling for clear drawing button */
+        #clear-drawing-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        #clear-drawing-btn:hover {
+            background: linear-gradient(135deg, #ee5a24 0%, #ff6b6b 100%);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+        }
+
+        #clear-drawing-btn.active {
+            background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
+            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.6);
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .color-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .color-btn::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd, #98d8c8);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-btn:hover::before {
+            opacity: 0.6;
+        }
+
+        .color-btn:active {
+            transform: scale(1.05) rotate(0deg);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .color-btn.active {
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4);
+            transform: scale(1.1);
+        }
+
+        .color-btn.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: bold;
+            font-size: 14px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .brush-size {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .brush-size span {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .brush-size input {
+            width: 120px;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .brush-size input::-webkit-slider-thumb {
+            appearance: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .brush-size input::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.7);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .brush-size input::-moz-range-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .brush-size input::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.7);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        #mindmap-area {
+            width: 100%;
+            height: calc(100% - 40px);
+            position: relative;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid #334155;
+        }
+
+        .node {
+            position: absolute;
+            min-width: 120px;
+            min-height: 60px;
+            background: #3b82f6;
+            color: white;
+            font-weight: 600;
+            border: 2px solid #60a5fa;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            cursor: move;
+            text-align: center;
+            user-select: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .node:focus {
+            outline: none;
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+        }
+
+        .node.selected {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.5);
+            transform: scale(1.02);
+        }
+
+        .node:hover {
+            transform: scale(1.02);
+        }
+
+        .context-menu {
+            position: absolute;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            min-width: 180px;
+            overflow: hidden;
+        }
+
+        .context-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .context-menu li {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .context-menu li:hover {
+            background-color: #f8fafc;
+            color: #3b82f6;
+        }
+
+        .connection-label {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            color: #334155;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .connection-control-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #94a3b8;
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: move;
+            pointer-events: auto;
+            z-index: 15;
+            display: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .connection-control-point:hover {
+            background-color: #3b82f6;
+            transform: scale(1.2);
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.5);
+        }
+
+        .connection-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .connection-svg:hover {
+            cursor: pointer;
+        }
+
+        .color-picker {
+            display: none;
+            position: absolute;
+            background: white;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+
+        .color-option {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin: 0.25rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.selected {
+            border-color: #334155;
+        }
+    </style>
+
+    <!-- LeaderLine for connections (replaced with custom SVG system) -->
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <i class="ri-leaf-fill"></i>
+                <span>Spirit</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="home.html">Dashboard</a></li>
+                <li><a href="FocusArena.html">Focus</a></li>
+                <li><a href="spiritradio.html">Radio</a></li>
+                <li><a class="active" href="mindmap.html" class="active">Mind Map</a></li>
+                <li><a href="chat.html">Chat</a></li>
+                <li>
+                    <button onclick="location.href='index.html'" class="signout-button">Sign Out</button>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Visual Mind Map Interface -->
+    <main class="mindmap-container">
+        <div class="toolbar">
+            <button id="add-node-btn">
+                <i class="ri-add-circle-line"></i> Add Node
+            </button>
+            <button id="connect-nodes-btn">
+                <i class="ri-node-tree"></i> Connect Nodes
+            </button>
+            <button id="whiteboard-btn">
+                <i class="ri-edit-line"></i> Whiteboard
+            </button>
+            <button id="delete-selected-btn">
+                <i class="ri-delete-bin-line"></i> Delete Selected
+            </button>
+            <button id="export-btn">
+                <i class="ri-download-line"></i> Export PDF
+            </button>
+            <button id="clear-all-btn">
+                <i class="ri-delete-bin-2-line"></i> Clear All
+            </button>
+        </div>
+
+        <!-- Drawing Tools -->
+        <div id="drawing-tools" class="drawing-tools">
+            <div class="tool-group">
+                <button id="pen-tool" class="active">
+                    <i class="ri-edit-line"></i> Pen
+                </button>
+                <button id="eraser-tool">
+                    <i class="ri-eraser-line"></i> Eraser
+                </button>
+            </div>
+            <div class="tool-group">
+                <span>Color:</span>
+                <div class="color-palette">
+                    <div class="color-btn active" data-color="#000000" style="background-color: #000000;"></div>
+                    <div class="color-btn" data-color="#3b82f6" style="background-color: #3b82f6;"></div>
+                    <div class="color-btn" data-color="#10b981" style="background-color: #10b981;"></div>
+                    <div class="color-btn" data-color="#f59e0b" style="background-color: #f59e0b;"></div>
+                    <div class="color-btn" data-color="#ef4444" style="background-color: #ef4444;"></div>
+                    <div class="color-btn" data-color="#8b5cf6" style="background-color: #8b5cf6;"></div>
+                    <div class="color-btn" data-color="#ffffff" style="background-color: #ffffff; border: 1px solid #666;"></div>
+                </div>
+            </div>
+            <div class="tool-group brush-size">
+                <span>Size:</span>
+                <input type="range" id="brush-size" min="1" max="20" value="2">
+                <span id="brush-size-value">2px</span>
+            </div>
+            <div class="tool-group">
+                <button id="clear-drawing-btn">
+                    <i class="ri-delete-bin-line"></i> Clear Drawing
+                </button>
+            </div>
+        </div>
+    
+        <div id="mindmap-area">
+            <!-- Whiteboard Canvas -->
+            <canvas id="whiteboard-canvas" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></canvas>
+        </div>
+        
+        <!-- Context Menu -->
+        <div id="context-menu" class="context-menu">
+            <ul>
+                <li id="delete-node"><i class="ri-delete-bin-line"></i> Delete Node</li>
+                <li id="change-color"><i class="ri-palette-line"></i> Change Color</li>
+                <li id="duplicate-node"><i class="ri-file-copy-line"></i> Duplicate</li>
+            </ul>
+        </div>
+
+        <!-- Color Picker -->
+        <div id="color-picker" class="color-picker">
+            <div class="color-option" data-color="#3b82f6" style="background-color: #3b82f6;"></div>
+            <div class="color-option" data-color="#10b981" style="background-color: #10b981;"></div>
+            <div class="color-option" data-color="#f59e0b" style="background-color: #f59e0b;"></div>
+            <div class="color-option" data-color="#ef4444" style="background-color: #ef4444;"></div>
+            <div class="color-option" data-color="#8b5cf6" style="background-color: #8b5cf6;"></div>
+            <div class="color-option" data-color="#ec4899" style="background-color: #ec4899;"></div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <script>
+        const mindmapArea = document.getElementById('mindmap-area');
+        const addNodeBtn = document.getElementById('add-node-btn');
+        const connectNodesBtn = document.getElementById('connect-nodes-btn');
+        const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+        const exportBtn = document.getElementById('export-btn');
+        const clearAllBtn = document.getElementById('clear-all-btn');
+        const contextMenu = document.getElementById('context-menu');
+        const deleteNodeBtn = document.getElementById('delete-node');
+        const changeColorBtn = document.getElementById('change-color');
+        const duplicateNodeBtn = document.getElementById('duplicate-node');
+        const colorPicker = document.getElementById('color-picker');
+
+        // Whiteboard elements
+        const whiteboardBtn = document.getElementById('whiteboard-btn');
+        const drawingTools = document.getElementById('drawing-tools');
+        const penTool = document.getElementById('pen-tool');
+        const eraserTool = document.getElementById('eraser-tool');
+        const clearDrawingBtn = document.getElementById('clear-drawing-btn');
+        const brushSizeInput = document.getElementById('brush-size');
+        const brushSizeValue = document.getElementById('brush-size-value');
+        const whiteboardCanvas = document.getElementById('whiteboard-canvas');
+
+        let selectedNodes = [];
+        let lines = [];
+        let rightClickedNode = null;
+        let nodeCounter = 0;
+        let isConnecting = false;
+        let connectionLabel = null;
+
+        // Whiteboard variables
+        let isWhiteboardMode = false;
+        let isDrawing = false;
+        let currentTool = 'pen';
+        let currentColor = '#000000';
+        let brushSize = 2;
+        let canvasContext = null;
+
+        // Load saved mindmap from localStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMindmap();
+
+            // Handle window resize for canvas and lines
+            window.addEventListener('resize', () => {
+                if (isWhiteboardMode) {
+                    initializeCanvas();
+                }
+                // Reposition all connections after resize
+                setTimeout(() => {
+                    lines.forEach(connection => {
+                        connection.updatePath();
+                        if (connection.labelElement) {
+                            updateConnectionLabel(connection);
+                        }
+                    });
+                }, 100);
+            });
+
+            // Set up keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Delete key - delete selected nodes
+                if (e.key === 'Delete' && selectedNodes.length > 0) {
+                    deleteSelectedNodes();
+                }
+
+                // Escape key - cancel connection mode or deselect nodes
+                if (e.key === 'Escape') {
+                    if (isConnecting) {
+                        cancelConnectionMode();
+                    } else if (selectedNodes.length > 0) {
+                        deselectAllNodes();
+                    }
+                }
+
+                // Ctrl+D - duplicate selected nodes
+                if (e.ctrlKey && e.key === 'd' && selectedNodes.length > 0) {
+                    duplicateSelectedNodes();
+                }
+            });
+        });
+
+        addNodeBtn.addEventListener('click', () => {
+            createNode();
+        });
+
+        connectNodesBtn.addEventListener('click', () => {
+            if (isConnecting) {
+                cancelConnectionMode();
+            } else {
+                startConnectionMode();
+            }
+        });
+
+        deleteSelectedBtn.addEventListener('click', deleteSelectedNodes);
+
+        exportBtn.addEventListener('click', exportToPDF);
+
+        clearAllBtn.addEventListener('click', clearAll);
+
+        // Whiteboard event listeners
+        whiteboardBtn.addEventListener('click', toggleWhiteboardMode);
+        penTool.addEventListener('click', () => setTool('pen'));
+        eraserTool.addEventListener('click', () => setTool('eraser'));
+        clearDrawingBtn.addEventListener('click', clearDrawing);
+        brushSizeInput.addEventListener('input', updateBrushSize);
+
+        // Color picker event for whiteboard
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                setColor(e.target.dataset.color);
+                document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+
+        // Handle right-click context menu
+        mindmapArea.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const target = e.target.closest('.node');
+            if (target) {
+                rightClickedNode = target;
+                showContextMenu(e.clientX, e.clientY);
+            } else {
+                hideContextMenu();
+            }
+        });
+
+        // Hide context menu when clicking elsewhere
+        document.addEventListener('click', (e) => {
+            if (!contextMenu.contains(e.target) && !colorPicker.contains(e.target)) {
+                hideContextMenu();
+                hideColorPicker();
+            }
+        });
+
+        deleteNodeBtn.addEventListener('click', () => {
+            if (rightClickedNode) {
+                deleteNode(rightClickedNode);
+                rightClickedNode = null;
+                hideContextMenu();
+            }
+        });
+
+        changeColorBtn.addEventListener('click', (e) => {
+            if (rightClickedNode) {
+                showColorPicker(e.clientX, e.clientY);
+            }
+        });
+
+        duplicateNodeBtn.addEventListener('click', () => {
+            if (rightClickedNode) {
+                duplicateNode(rightClickedNode);
+                hideContextMenu();
+            }
+        });
+
+        // Color picker event
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', () => {
+                if (rightClickedNode) {
+                    rightClickedNode.style.backgroundColor = option.dataset.color;
+                    saveMindmap();
+                    hideColorPicker();
+                    hideContextMenu();
+                }
+            });
+        });
+
+        function showContextMenu(x, y) {
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+        }
+
+        function hideContextMenu() {
+            contextMenu.style.display = 'none';
+        }
+
+        function showColorPicker(x, y) {
+            colorPicker.style.display = 'grid';
+            colorPicker.style.gridTemplateColumns = 'repeat(3, 1fr)';
+            colorPicker.style.left = `${x}px`;
+            colorPicker.style.top = `${y}px`;
+        }
+
+        function hideColorPicker() {
+            colorPicker.style.display = 'none';
+        }
+
+        function createNode(x, y, text = '', id = null, color = '#3b82f6') {
+            const node = document.createElement('div');
+            node.className = 'node';
+            node.contentEditable = true;
+            node.dataset.id = id || `node-${nodeCounter++}`;
+            
+            // Set position if provided, otherwise center
+            const centerX = mindmapArea.offsetWidth / 2 - 60;
+            const centerY = mindmapArea.offsetHeight / 2 - 30;
+            
+            node.style.left = x ? `${x}px` : `${centerX}px`;
+            node.style.top = y ? `${y}px` : `${centerY}px`;
+            node.style.backgroundColor = color;
+            
+            node.textContent = text || 'New Node';
+            mindmapArea.appendChild(node);
+
+            makeDraggable(node);
+
+            node.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                if (isConnecting) {
+                    handleNodeConnection(node);
+                } else {
+                    toggleNodeSelection(node, e.ctrlKey || e.metaKey);
+                }
+            });
+
+            node.addEventListener('dblclick', (e) => {
+                e.stopPropagation();
+                node.focus();
+            });
+
+            node.addEventListener('blur', () => {
+                saveMindmap();
+            });
+
+            return node;
+        }
+
+        function toggleNodeSelection(node, multiSelect = false) {
+            if (!multiSelect) {
+                // Deselect all if not holding Ctrl/Cmd
+                selectedNodes.forEach(n => n.classList.remove('selected'));
+                selectedNodes = [];
+            }
+            
+            if (selectedNodes.includes(node)) {
+                // Deselect if already selected
+                node.classList.remove('selected');
+                selectedNodes = selectedNodes.filter(n => n !== node);
+            } else {
+                // Select the node
+                selectedNodes.push(node);
+                node.classList.add('selected');
+            }
+            
+            updateToolbarButtons();
+        }
+
+        function deselectAllNodes() {
+            selectedNodes.forEach(node => node.classList.remove('selected'));
+            selectedNodes = [];
+            updateToolbarButtons();
+        }
+
+        function updateToolbarButtons() {
+            connectNodesBtn.innerHTML = isConnecting ? 
+                '<i class="ri-close-line"></i> Cancel Connection' : 
+                '<i class="ri-node-tree"></i> Connect Nodes';
+                
+            connectNodesBtn.style.background = isConnecting ? 
+                'linear-gradient(135deg, #ef4444, #f97316)' : 
+                'linear-gradient(135deg, #3b82f6, #6366f1)';
+                
+            deleteSelectedBtn.disabled = selectedNodes.length === 0;
+        }
+
+        function startConnectionMode() {
+            if (selectedNodes.length === 2) {
+                // If exactly 2 nodes are selected, connect them directly
+                createConnection(selectedNodes[0], selectedNodes[1]);
+                deselectAllNodes();
+            } else {
+                // Enter connection mode
+                isConnecting = true;
+                deselectAllNodes();
+                mindmapArea.style.cursor = 'crosshair';
+                
+                // Create connection label
+                connectionLabel = document.createElement('div');
+                connectionLabel.className = 'connection-label';
+                connectionLabel.textContent = 'Select first node';
+                connectionLabel.style.display = 'none';
+                mindmapArea.appendChild(connectionLabel);
+                
+                updateToolbarButtons();
+            }
+        }
+
+        function cancelConnectionMode() {
+            isConnecting = false;
+            mindmapArea.style.cursor = '';
+            
+            if (connectionLabel) {
+                connectionLabel.remove();
+                connectionLabel = null;
+            }
+            
+            updateToolbarButtons();
+        }
+
+        function handleNodeConnection(node) {
+            if (selectedNodes.length === 0) {
+                // First node selected
+                selectedNodes.push(node);
+                node.classList.add('selected');
+                connectionLabel.textContent = 'Select second node';
+                
+                // Position label near the node
+                const rect = node.getBoundingClientRect();
+                const areaRect = mindmapArea.getBoundingClientRect();
+                connectionLabel.style.left = `${rect.right - areaRect.left + 10}px`;
+                connectionLabel.style.top = `${rect.top - areaRect.top}px`;
+                connectionLabel.style.display = 'block';
+            } else if (selectedNodes.length === 1 && selectedNodes[0] !== node) {
+                // Second node selected
+                selectedNodes.push(node);
+                node.classList.add('selected');
+                createConnection(selectedNodes[0], selectedNodes[1]);
+                cancelConnectionMode();
+            }
+        }
+
+        function createConnection(node1, node2, label = '') {
+            // Check if connection already exists
+            const existingConnection = lines.find(line =>
+                (line.startNode === node1 && line.endNode === node2) ||
+                (line.startNode === node2 && line.endNode === node1)
+            );
+
+            if (existingConnection) {
+                alert('These nodes are already connected.');
+                return;
+            }
+
+            // Create SVG container for the connection
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.className = 'connection-svg';
+            svg.style.position = 'absolute';
+            svg.style.top = '0';
+            svg.style.left = '0';
+            svg.style.width = '100%';
+            svg.style.height = '100%';
+            svg.style.pointerEvents = 'none';
+            svg.style.zIndex = '10';
+
+            // Create the path element
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('stroke', '#94a3b8');
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('marker-end', 'url(#circle-marker)');
+
+            // Create circle marker
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+            marker.setAttribute('id', 'circle-marker');
+            marker.setAttribute('markerWidth', '8');
+            marker.setAttribute('markerHeight', '8');
+            marker.setAttribute('refX', '4');
+            marker.setAttribute('refY', '4');
+            marker.setAttribute('orient', 'auto');
+
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', '4');
+            circle.setAttribute('cy', '4');
+            circle.setAttribute('r', '3');
+            circle.setAttribute('fill', '#94a3b8');
+
+            marker.appendChild(circle);
+            defs.appendChild(marker);
+            svg.appendChild(defs);
+            svg.appendChild(path);
+
+            mindmapArea.appendChild(svg);
+
+            // Create control points (handles) for the connection
+            const controlPoint1 = createControlPoint();
+            const controlPoint2 = createControlPoint();
+
+            // Store connection data
+            const connection = {
+                startNode: node1,
+                endNode: node2,
+                svg: svg,
+                path: path,
+                controlPoint1: controlPoint1,
+                controlPoint2: controlPoint2,
+                label: label,
+                updatePath: function() {
+                    updateConnectionPath(this);
+                }
+            };
+
+            // Add hover effects to show control points
+            svg.addEventListener('mouseenter', () => {
+                connection.controlPoint1.style.display = 'block';
+                connection.controlPoint2.style.display = 'block';
+            });
+
+            svg.addEventListener('mouseleave', () => {
+                // Only hide if not currently dragging
+                if (!connection.controlPoint1.dragging && !connection.controlPoint2.dragging) {
+                    connection.controlPoint1.style.display = 'none';
+                    connection.controlPoint2.style.display = 'none';
+                }
+            });
+
+            // Store dragging state on control points
+            connection.controlPoint1.dragging = false;
+            connection.controlPoint2.dragging = false;
+
+            lines.push(connection);
+
+            // Add connection label if provided
+            if (label) {
+                const labelElement = document.createElement('div');
+                labelElement.className = 'connection-label';
+                labelElement.textContent = label;
+                labelElement.style.pointerEvents = 'auto';
+                labelElement.contentEditable = true;
+
+                mindmapArea.appendChild(labelElement);
+
+                // Store reference to label
+                connection.labelElement = labelElement;
+
+                // Update label position
+                updateConnectionLabel(connection);
+            }
+
+            saveMindmap();
+            return connection;
+        }
+
+        function createControlPoint() {
+            const point = document.createElement('div');
+            point.className = 'connection-control-point';
+            point.style.position = 'absolute';
+            point.style.width = '8px';
+            point.style.height = '8px';
+            point.style.backgroundColor = '#94a3b8';
+            point.style.border = '2px solid white';
+            point.style.borderRadius = '50%';
+            point.style.cursor = 'move';
+            point.style.pointerEvents = 'auto';
+            point.style.zIndex = '15';
+            point.style.display = 'none'; // Hidden by default, shown on hover
+
+            // Make the control point draggable
+            makeControlPointDraggable(point);
+
+            mindmapArea.appendChild(point);
+            return point;
+        }
+
+        function makeControlPointDraggable(point) {
+            let isDragging = false;
+            let offsetX, offsetY;
+
+            point.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                isDragging = true;
+                point.dragging = true;
+                offsetX = e.clientX - point.getBoundingClientRect().left;
+                offsetY = e.clientY - point.getBoundingClientRect().top;
+                point.style.backgroundColor = '#3b82f6';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const x = e.clientX - offsetX - mindmapArea.getBoundingClientRect().left;
+                    const y = e.clientY - offsetY - mindmapArea.getBoundingClientRect().top;
+
+                    point.style.left = `${x}px`;
+                    point.style.top = `${y}px`;
+
+                    // Find the connection this point belongs to and update the path
+                    const connection = lines.find(line =>
+                        line.controlPoint1 === point || line.controlPoint2 === point
+                    );
+                    if (connection) {
+                        updateConnectionPath(connection);
+                        if (connection.labelElement) {
+                            updateConnectionLabel(connection);
+                        }
+                    }
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    point.dragging = false;
+                    point.style.backgroundColor = '#94a3b8';
+                    saveMindmap();
+                }
+            });
+        }
+
+        function updateConnectionPath(connection) {
+            const startRect = connection.startNode.getBoundingClientRect();
+            const endRect = connection.endNode.getBoundingClientRect();
+            const areaRect = mindmapArea.getBoundingClientRect();
+
+            // Calculate center points
+            const startCenterX = startRect.left + startRect.width / 2 - areaRect.left;
+            const startCenterY = startRect.top + startRect.height / 2 - areaRect.top;
+            const endCenterX = endRect.left + endRect.width / 2 - areaRect.left;
+            const endCenterY = endRect.top + endRect.height / 2 - areaRect.top;
+
+            // Calculate edge intersection points
+            const startPoint = getEdgeIntersectionPoint(
+                startCenterX, startCenterY, endCenterX, endCenterY,
+                startRect.left - areaRect.left, startRect.top - areaRect.top,
+                startRect.width, startRect.height
+            );
+            const endPoint = getEdgeIntersectionPoint(
+                endCenterX, endCenterY, startCenterX, startCenterY,
+                endRect.left - areaRect.left, endRect.top - areaRect.top,
+                endRect.width, endRect.height
+            );
+
+            const startX = startPoint.x;
+            const startY = startPoint.y;
+            const endX = endPoint.x;
+            const endY = endPoint.y;
+
+            // Get control point positions
+            let cp1X, cp1Y, cp2X, cp2Y;
+
+            if (connection.controlPoint1.style.display !== 'none') {
+                const cp1Rect = connection.controlPoint1.getBoundingClientRect();
+                cp1X = cp1Rect.left + cp1Rect.width / 2 - areaRect.left;
+                cp1Y = cp1Rect.top + cp1Rect.height / 2 - areaRect.top;
+            } else {
+                // Default control point position (quarter way)
+                cp1X = startX + (endX - startX) * 0.25;
+                cp1Y = startY + (endY - startY) * 0.25;
+            }
+
+            if (connection.controlPoint2.style.display !== 'none') {
+                const cp2Rect = connection.controlPoint2.getBoundingClientRect();
+                cp2X = cp2Rect.left + cp2Rect.width / 2 - areaRect.left;
+                cp2Y = cp2Rect.top + cp2Rect.height / 2 - areaRect.top;
+            } else {
+                // Default control point position (three-quarters way)
+                cp2X = startX + (endX - startX) * 0.75;
+                cp2Y = startY + (endY - startY) * 0.75;
+            }
+
+            // Create curved path using cubic Bézier curve
+            const pathData = `M ${startX} ${startY} C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${endX} ${endY}`;
+            connection.path.setAttribute('d', pathData);
+
+            // Update control point positions if they're not manually positioned
+            if (connection.controlPoint1.style.display === 'none') {
+                connection.controlPoint1.style.left = `${cp1X - 4}px`;
+                connection.controlPoint1.style.top = `${cp1Y - 4}px`;
+            }
+            if (connection.controlPoint2.style.display === 'none') {
+                connection.controlPoint2.style.left = `${cp2X - 4}px`;
+                connection.controlPoint2.style.top = `${cp2Y - 4}px`;
+            }
+        }
+
+        function getEdgeIntersectionPoint(fromX, fromY, toX, toY, rectX, rectY, rectWidth, rectHeight) {
+            // Calculate the direction vector from center to target
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+
+            // If no direction (same point), return the center
+            if (dx === 0 && dy === 0) {
+                return { x: fromX, y: fromY };
+            }
+
+            // Calculate distances to each edge
+            const distToLeft = fromX - rectX;
+            const distToRight = (rectX + rectWidth) - fromX;
+            const distToTop = fromY - rectY;
+            const distToBottom = (rectY + rectHeight) - fromY;
+
+            // Calculate intersection points with each edge
+            let intersectionX, intersectionY;
+
+            if (Math.abs(dx) > Math.abs(dy)) {
+                // Moving more horizontally
+                if (dx > 0) {
+                    // Moving right, intersect with right edge
+                    intersectionX = rectX + rectWidth;
+                    intersectionY = fromY + (dy / dx) * distToRight;
+                } else {
+                    // Moving left, intersect with left edge
+                    intersectionX = rectX;
+                    intersectionY = fromY + (dy / dx) * distToLeft;
+                }
+            } else {
+                // Moving more vertically
+                if (dy > 0) {
+                    // Moving down, intersect with bottom edge
+                    intersectionY = rectY + rectHeight;
+                    intersectionX = fromX + (dx / dy) * distToBottom;
+                } else {
+                    // Moving up, intersect with top edge
+                    intersectionY = rectY;
+                    intersectionX = fromX + (dx / dy) * distToTop;
+                }
+            }
+
+            // Ensure the intersection point is within the rectangle bounds
+            intersectionX = Math.max(rectX, Math.min(rectX + rectWidth, intersectionX));
+            intersectionY = Math.max(rectY, Math.min(rectY + rectHeight, intersectionY));
+
+            return { x: intersectionX, y: intersectionY };
+        }
+
+        function updateConnectionLabel(connection) {
+            if (!connection.labelElement) return;
+
+            // Calculate edge intersection points
+            const startRect = connection.startNode.getBoundingClientRect();
+            const endRect = connection.endNode.getBoundingClientRect();
+            const areaRect = mindmapArea.getBoundingClientRect();
+
+            const startCenterX = startRect.left + startRect.width / 2 - areaRect.left;
+            const startCenterY = startRect.top + startRect.height / 2 - areaRect.top;
+            const endCenterX = endRect.left + endRect.width / 2 - areaRect.left;
+            const endCenterY = endRect.top + endRect.height / 2 - areaRect.top;
+
+            const startPoint = getEdgeIntersectionPoint(
+                startCenterX, startCenterY, endCenterX, endCenterY,
+                startRect.left - areaRect.left, startRect.top - areaRect.top,
+                startRect.width, startRect.height
+            );
+            const endPoint = getEdgeIntersectionPoint(
+                endCenterX, endCenterY, startCenterX, startCenterY,
+                endRect.left - areaRect.left, endRect.top - areaRect.top,
+                endRect.width, endRect.height
+            );
+
+            // Simple midpoint calculation between edge points
+            const midX = (startPoint.x + endPoint.x) / 2;
+            const midY = (startPoint.y + endPoint.y) / 2;
+
+            connection.labelElement.style.left = `${midX - 30}px`;
+            connection.labelElement.style.top = `${midY - 10}px`;
+        }
+
+        function makeDraggable(element) {
+            let offsetX, offsetY, isDragging = false;
+
+            element.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return; // Only left click for dragging
+
+                // Don't start dragging if clicking on a text selection
+                const selection = window.getSelection();
+                if (selection.toString().length > 0) return;
+
+                isDragging = true;
+                offsetX = e.clientX - element.getBoundingClientRect().left;
+                offsetY = e.clientY - element.getBoundingClientRect().top;
+                element.style.cursor = 'grabbing';
+
+                // Bring to front
+                element.style.zIndex = '100';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const x = e.clientX - offsetX - mindmapArea.getBoundingClientRect().left;
+                    const y = e.clientY - offsetY - mindmapArea.getBoundingClientRect().top;
+
+                    // Boundary checks - keep nodes within mindmap area
+                    const maxX = mindmapArea.offsetWidth - element.offsetWidth;
+                    const maxY = mindmapArea.offsetHeight - element.offsetHeight;
+
+                    element.style.left = `${Math.max(0, Math.min(x, maxX))}px`;
+                    element.style.top = `${Math.max(0, Math.min(y, maxY))}px`;
+
+                    // Update connections less frequently during drag for better performance
+                    // Only update every 50ms to avoid excessive line recreation
+                    const now = Date.now();
+                    if (!element.lastUpdate || now - element.lastUpdate > 50) {
+                        element.lastUpdate = now;
+                        updateConnections(element);
+                    }
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    element.style.cursor = 'grab';
+                    element.style.zIndex = '';
+
+                    // Clear the throttling timestamp
+                    element.lastUpdate = null;
+
+                    // Final update to ensure lines are properly positioned
+                    updateConnections(element);
+                    saveMindmap();
+                }
+            });
+        }        function updateConnections(node) {
+            // Update all lines connected to this node
+            lines.forEach(connection => {
+                if (connection.startNode === node || connection.endNode === node) {
+                    connection.updatePath();
+                    if (connection.labelElement) {
+                        updateConnectionLabel(connection);
+                    }
+                }
+            });
+        }        function deleteNode(node) {
+            // Remove all connections to this node
+            lines = lines.filter(connection => {
+                if (connection.startNode === node || connection.endNode === node) {
+                    // Remove SVG and control points
+                    if (connection.svg) {
+                        connection.svg.remove();
+                    }
+                    if (connection.controlPoint1) {
+                        connection.controlPoint1.remove();
+                    }
+                    if (connection.controlPoint2) {
+                        connection.controlPoint2.remove();
+                    }
+                    if (connection.labelElement) {
+                        connection.labelElement.remove();
+                    }
+                    return false;
+                }
+                return true;
+            });
+            
+            // Remove node from selectedNodes if it's there
+            selectedNodes = selectedNodes.filter(n => n !== node);
+            
+            // Remove the node from DOM
+            node.remove();
+            saveMindmap();
+        }
+
+        function deleteSelectedNodes() {
+            if (selectedNodes.length === 0) return;
+            
+            // Create a copy of the array to avoid modification during iteration
+            const nodesToDelete = [...selectedNodes];
+            
+            nodesToDelete.forEach(node => {
+                deleteNode(node);
+            });
+            
+            selectedNodes = [];
+            updateToolbarButtons();
+        }
+
+        function duplicateNode(node) {
+            const rect = node.getBoundingClientRect();
+            const areaRect = mindmapArea.getBoundingClientRect();
+            
+            const newX = rect.left - areaRect.left + 20;
+            const newY = rect.top - areaRect.top + 20;
+            
+            const newNode = createNode(
+                newX,
+                newY,
+                node.textContent + ' (copy)',
+                null,
+                node.style.backgroundColor
+            );
+            
+            // Select the new node and deselect others
+            deselectAllNodes();
+            selectedNodes.push(newNode);
+            newNode.classList.add('selected');
+            
+            saveMindmap();
+        }
+
+        function duplicateSelectedNodes() {
+            if (selectedNodes.length === 0) return;
+            
+            const newNodes = [];
+            
+            selectedNodes.forEach(node => {
+                const rect = node.getBoundingClientRect();
+                const areaRect = mindmapArea.getBoundingClientRect();
+                
+                const newX = rect.left - areaRect.left + 20;
+                const newY = rect.top - areaRect.top + 20;
+                
+                const newNode = createNode(
+                    newX,
+                    newY,
+                    node.textContent + ' (copy)',
+                    null,
+                    node.style.backgroundColor
+                );
+                
+                newNodes.push(newNode);
+            });
+            
+            // Select the new nodes and deselect others
+            deselectAllNodes();
+            selectedNodes = newNodes;
+            selectedNodes.forEach(node => node.classList.add('selected'));
+            
+            saveMindmap();
+        }
+
+        function saveMindmap() {
+            const nodes = Array.from(document.querySelectorAll('.node')).map(node => ({
+                id: node.dataset.id,
+                x: node.offsetLeft,
+                y: node.offsetTop,
+                text: node.textContent,
+                color: node.style.backgroundColor
+            }));
+
+            const connections = lines.map(connection => ({
+                sourceId: connection.startNode.dataset.id,
+                targetId: connection.endNode.dataset.id,
+                label: connection.label || '',
+                controlPoint1: connection.controlPoint1 ? {
+                    x: parseFloat(connection.controlPoint1.style.left) + 4,
+                    y: parseFloat(connection.controlPoint1.style.top) + 4
+                } : null,
+                controlPoint2: connection.controlPoint2 ? {
+                    x: parseFloat(connection.controlPoint2.style.left) + 4,
+                    y: parseFloat(connection.controlPoint2.style.top) + 4
+                } : null
+            }));
+
+            const mindmapData = {
+                nodes,
+                connections,
+                nodeCounter,
+                whiteboardMode: isWhiteboardMode
+            };
+
+            localStorage.setItem('mindmapData', JSON.stringify(mindmapData));
+        }
+
+        function loadMindmap() {
+            const savedData = localStorage.getItem('mindmapData');
+            if (!savedData) {
+                // Create a default central node if no saved data
+                createNode();
+                return;
+            }
+
+            const mindmapData = JSON.parse(savedData);
+            nodeCounter = mindmapData.nodeCounter || 0;
+
+            // Create nodes first
+            const nodesMap = {};
+            mindmapData.nodes.forEach(nodeData => {
+                const node = createNode(
+                    nodeData.x,
+                    nodeData.y,
+                    nodeData.text,
+                    nodeData.id,
+                    nodeData.color || '#3b82f6'
+                );
+                nodesMap[nodeData.id] = node;
+            });
+
+            // Then create connections
+            mindmapData.connections.forEach(conn => {
+                const sourceNode = nodesMap[conn.sourceId];
+                const targetNode = nodesMap[conn.targetId];
+                if (sourceNode && targetNode) {
+                    const connection = createConnection(sourceNode, targetNode, conn.label);
+
+                    // Restore control point positions if they exist
+                    if (conn.controlPoint1 && connection) {
+                        connection.controlPoint1.style.left = `${conn.controlPoint1.x - 4}px`;
+                        connection.controlPoint1.style.top = `${conn.controlPoint1.y - 4}px`;
+                        connection.controlPoint1.style.display = 'block';
+                    }
+                    if (conn.controlPoint2 && connection) {
+                        connection.controlPoint2.style.left = `${conn.controlPoint2.x - 4}px`;
+                        connection.controlPoint2.style.top = `${conn.controlPoint2.y - 4}px`;
+                        connection.controlPoint2.style.display = 'block';
+                    }
+
+                    // Update the path with restored control points
+                    if (connection) {
+                        connection.updatePath();
+                    }
+                }
+            });
+
+            // Restore whiteboard mode if it was active
+            if (mindmapData.whiteboardMode) {
+                toggleWhiteboardMode();
+            }
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm'
+            });
+
+            // Show loading message
+            const loadingMsg = document.createElement('div');
+            loadingMsg.style.position = 'fixed';
+            loadingMsg.style.top = '50%';
+            loadingMsg.style.left = '50%';
+            loadingMsg.style.transform = 'translate(-50%, -50%)';
+            loadingMsg.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            loadingMsg.style.color = 'white';
+            loadingMsg.style.padding = '20px';
+            loadingMsg.style.borderRadius = '5px';
+            loadingMsg.style.zIndex = '10000';
+            loadingMsg.textContent = 'Preparing PDF...';
+            document.body.appendChild(loadingMsg);
+
+            // Create a temporary canvas to combine mindmap and whiteboard
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            const rect = mindmapArea.getBoundingClientRect();
+            
+            tempCanvas.width = rect.width;
+            tempCanvas.height = rect.height;
+
+            html2canvas(mindmapArea, {
+                scale: 2,
+                logging: false,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#0f172a'
+            }).then(mindmapCanvas => {
+                tempCtx.drawImage(mindmapCanvas, 0, 0);
+                
+                // If whiteboard has content, draw it on top
+                if (isWhiteboardMode && canvasContext) {
+                    const whiteboardImageData = canvasContext.getImageData(0, 0, whiteboardCanvas.width, whiteboardCanvas.height);
+                    tempCtx.putImageData(whiteboardImageData, 0, 0);
+                }
+                
+                const imgData = tempCanvas.toDataURL('image/png');
+                const imgWidth = doc.internal.pageSize.getWidth();
+                const imgHeight = (tempCanvas.height * imgWidth) / tempCanvas.width;
+                
+                doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                doc.save('mindmap.pdf');
+                
+                // Remove loading message
+                loadingMsg.remove();
+            }).catch(err => {
+                console.error('Error generating PDF:', err);
+                loadingMsg.remove();
+                alert('Error generating PDF. Please try again.');
+            });
+        }
+
+        function clearAll() {
+            if (!confirm('Are you sure you want to clear the entire mindmap? This cannot be undone.')) {
+                return;
+            }
+            
+            // Remove all nodes
+            document.querySelectorAll('.node').forEach(node => {
+                node.remove();
+            });
+            
+            // Remove all connections
+            lines.forEach(connection => {
+                if (connection.svg) {
+                    connection.svg.remove();
+                }
+                if (connection.controlPoint1) {
+                    connection.controlPoint1.remove();
+                }
+                if (connection.controlPoint2) {
+                    connection.controlPoint2.remove();
+                }
+                if (connection.labelElement) {
+                    connection.labelElement.remove();
+                }
+            });
+            
+            lines = [];
+            selectedNodes = [];
+            nodeCounter = 0;
+            
+            // Clear whiteboard drawing
+            clearDrawing();
+            
+            // Clear localStorage
+            localStorage.removeItem('mindmapData');
+            
+            // Create a new default node
+            createNode();
+            
+            // Cancel any active connection mode
+            if (isConnecting) {
+                cancelConnectionMode();
+            }
+            
+            // Exit whiteboard mode if active
+            if (isWhiteboardMode) {
+                toggleWhiteboardMode();
+            }
+        }
+
+        // Whiteboard functions
+        function toggleWhiteboardMode() {
+            isWhiteboardMode = !isWhiteboardMode;
+            
+            if (isWhiteboardMode) {
+                whiteboardBtn.classList.add('active');
+                drawingTools.classList.add('show');
+                whiteboardCanvas.style.display = 'block';
+                whiteboardCanvas.style.pointerEvents = 'auto';
+                whiteboardCanvas.style.cursor = 'crosshair';
+                initializeCanvas();
+                
+                // Add drawing event listeners to mindmap area
+                mindmapArea.addEventListener('mousedown', handleMouseDown);
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+                
+                // Disable node interactions when in whiteboard mode
+                document.querySelectorAll('.node').forEach(node => {
+                    node.style.pointerEvents = 'none';
+                });
+            } else {
+                whiteboardBtn.classList.remove('active');
+                drawingTools.classList.remove('show');
+                whiteboardCanvas.style.display = 'none';
+                whiteboardCanvas.style.pointerEvents = 'none';
+                whiteboardCanvas.style.cursor = '';
+                
+                // Remove drawing event listeners
+                mindmapArea.removeEventListener('mousedown', handleMouseDown);
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+                
+                // Re-enable node interactions
+                document.querySelectorAll('.node').forEach(node => {
+                    node.style.pointerEvents = 'auto';
+                });
+            }
+        }
+
+        function initializeCanvas() {
+            const rect = mindmapArea.getBoundingClientRect();
+            whiteboardCanvas.width = rect.width;
+            whiteboardCanvas.height = rect.height;
+            canvasContext = whiteboardCanvas.getContext('2d');
+            
+            // Load saved drawing
+            loadDrawing();
+        }
+
+        function handleMouseDown(e) {
+            if (!isWhiteboardMode) return;
+            
+            // Only start drawing if clicking on canvas or mindmap area (not on nodes or other elements)
+            const target = e.target;
+            if (target !== whiteboardCanvas && target !== mindmapArea && !mindmapArea.contains(target)) return;
+            
+            e.preventDefault();
+            startDrawing(e);
+        }
+
+        function handleMouseMove(e) {
+            if (!isWhiteboardMode || !isDrawing) return;
+            draw(e);
+        }
+
+        function handleMouseUp(e) {
+            if (!isWhiteboardMode) return;
+            stopDrawing();
+        }
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousedown', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            whiteboardCanvas.dispatchEvent(mouseEvent);
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            whiteboardCanvas.dispatchEvent(mouseEvent);
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            const mouseEvent = new MouseEvent('mouseup');
+            whiteboardCanvas.dispatchEvent(mouseEvent);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = whiteboardCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            canvasContext.beginPath();
+            canvasContext.moveTo(x, y);
+            canvasContext.lineWidth = brushSize;
+            canvasContext.lineCap = 'round';
+            canvasContext.lineJoin = 'round';
+            
+            if (currentTool === 'eraser') {
+                canvasContext.globalCompositeOperation = 'destination-out';
+            } else {
+                canvasContext.globalCompositeOperation = 'source-over';
+                canvasContext.strokeStyle = currentColor;
+            }
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = whiteboardCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            canvasContext.lineTo(x, y);
+            canvasContext.stroke();
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                canvasContext.beginPath();
+                saveDrawing();
+            }
+        }
+
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-group button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (tool === 'pen') {
+                penTool.classList.add('active');
+            } else if (tool === 'eraser') {
+                eraserTool.classList.add('active');
+            }
+        }
+
+        function setColor(color) {
+            currentColor = color;
+        }
+
+        function updateBrushSize() {
+            brushSize = brushSizeInput.value;
+            brushSizeValue.textContent = brushSize + 'px';
+        }
+
+        function clearDrawing() {
+            if (canvasContext) {
+                canvasContext.clearRect(0, 0, whiteboardCanvas.width, whiteboardCanvas.height);
+                localStorage.removeItem('whiteboardDrawing');
+            }
+        }
+
+        function saveDrawing() {
+            if (canvasContext) {
+                const imageData = whiteboardCanvas.toDataURL();
+                localStorage.setItem('whiteboardDrawing', imageData);
+            }
+        }
+
+        function loadDrawing() {
+            const savedDrawing = localStorage.getItem('whiteboardDrawing');
+            if (savedDrawing && canvasContext) {
+                const img = new Image();
+                img.onload = () => {
+                    // Clear canvas first
+                    canvasContext.clearRect(0, 0, whiteboardCanvas.width, whiteboardCanvas.height);
+                    // Draw the saved image
+                    canvasContext.drawImage(img, 0, 0, whiteboardCanvas.width, whiteboardCanvas.height);
+                };
+                img.src = savedDrawing;
+            }
+        }
+    </script>
+
+    <!--Accesibility widget-->
+  <script src="https://cdn.userway.org/widget.js" data-account="ertbJPpxpJ"></script>
+</body>
+</html>

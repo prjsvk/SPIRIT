@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spirit – Your Personal Productivity Time Traveler</title>
+
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="home.css">
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="teacher-features.css">
+
+  <style>
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #0f172a;
+      color: #fff;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      z-index: 9999;
+      font-family: 'Montserrat', sans-serif;
+      animation: fadeInOut 3s ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .dashboard-header h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background-color: #1e293b;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .light-mode {
+      background-color: #f1f5f9;
+      color: #1e293b;
+    }
+
+    .light-mode .dashboard-card {
+      background-color: #ffffff;
+      color: #1e293b;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Mode</button>
+
+  <!-- Header -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <i class="ri-leaf-fill"></i>
+        <span>Spirit</span>
+      </div>
+      <ul class="nav-links">
+        <li><a class="active" href="home.html">Dashboard</a></li>
+        <li><a href="FocusArena.html">Focus</a></li>
+        <li><a href="spiritradio.html">Radio</a></li>
+        <li><a href="mindmap.html">Mind Map</a></li>
+        <li><a href="chat.html">Chat</a></li>
+        <li class="nav-dropdown">
+          <a href="#" class="dropdown-toggle">
+            <i class="ri-settings-3-line"></i> Teacher Tools
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="#" onclick="openFeatureModal()"><i class="ri-add-circle-line"></i> Add New Feature</a></li>
+            <li><a href="#" onclick="openClassroomModal()"><i class="ri-group-line"></i> Manage Classroom</a></li>
+            <li><a href="#" onclick="openAssignmentModal()"><i class="ri-file-list-line"></i> Create Assignment</a></li>
+            <li><a href="#" onclick="openAnalyticsModal()"><i class="ri-bar-chart-line"></i> View Analytics</a></li>
+            <li><a href="#" onclick="openResourcesModal()"><i class="ri-book-line"></i> Resource Library</a></li>
+          </ul>
+        </li>
+        <li><button onclick="location.href='index.html'" class="signout-button">Sign Out</button></li>
+      </ul>
+    </nav>
+  </header>
+
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Smarter Plans, Stronger You</h1>
+      <p>Spirit is your intuitive companion for planning, time mastery, and goal alignment—all tailored to your unique flow.</p>
+    </div>
+  </section>
+
+  <!-- Dashboard -->
+  <section class="dashboard-section" id="dashboard">
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+        <h2>Task Manager</h2>
+        <p>Your Time-Traveling Productivity Assistant: AI-driven tasks, visual time maps, and immersive scheduling insights.</p>
+        <p id="chronoQuote" style="font-style: italic; color: #6366f1; margin-top: 0.5rem;"></p>
+        <p id="studentIdDisplay" style="font-weight: bold; color: #10b981; margin-top: 0.5rem;"></p>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Task Manager -->
+        <div class="dashboard-card">
+          <h3>Task Portal</h3>
+          <input type="text" id="taskName" placeholder="Task Name" class="dashboard-input" />
+          <input type="number" id="duration" placeholder="Duration (mins)" class="dashboard-input" />
+          <input type="datetime-local" id="deadline" class="dashboard-input" />
+          <select id="priority" class="dashboard-select">
+            <option value="low">Low Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="high">High Priority</option>
+          </select>
+          <button onclick="addTask()" class="dashboard-button">+ Add to Timeline</button>
+        </div>
+
+        <!-- Timeline -->
+        <div class="dashboard-card">
+          <h3>Today's Time Map</h3>
+          <div class="timeline" id="timeline"></div>
+        </div>
+
+        <!-- Task Timer -->
+        <div class="dashboard-card">
+          <h3>Task Timer</h3>
+          <select id="taskSelect" class="dashboard-select"></select>
+          <button onclick="startTimer()" class="dashboard-button">▶ Start</button>
+          <div id="timerDisplay" class="timer-display">00:00</div>
+          <button onclick="pauseResumeTimer()" class="dashboard-button" style="background-color: #f59e0b;">⏪ Pause/Resume</button>
+          <div id="productivity-feedback" class="feedback"></div>
+          <button onclick="stopTimer()" class="dashboard-button" style="background: #ef4444; margin-top: -1px;">■ Reset</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scripts -->
+  <script>
+
+particlesJS("particles-js", {
+      "particles": {
+        "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+        "color": { "value": "#4cc9f0" },
+        "shape": { "type": "circle", "stroke": { "width": 0, "color": "#000000" } },
+        "opacity": { "value": 0.5, "random": true },
+        "size": { "value": 3, "random": true },
+        "line_linked": { "enable": true, "distance": 150, "color": "#7209b7", "opacity": 0.4, "width": 1 },
+        "move": { "enable": true, "speed": 3, "direction": "none", "random": true, "straight": false, "out_mode": "out" }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": { "enable": true, "mode": "repulse" },
+          "onclick": { "enable": true, "mode": "push" }
+        }
+      }
+    });
+
+    function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+    }
+  </script>
+  <script src="teacher-features.js"></script>
+  <script src="home.js"></script>
+
+  <!--Accesibility widget-->
+  <script src="https://cdn.userway.org/widget.js" data-account="ertbJPpxpJ"></script>
+  
+</body>
+
+</html>

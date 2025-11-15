@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Spirit</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="teacher-dashboard.css">
+</head>
+
+<body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Mode</button>
+
+    <!-- Header/Navbar -->
+    <header class="teacher-header">
+        <nav class="teacher-navbar">
+            <div class="logo">
+                <i class="ri-leaf-fill"></i>
+                <span>Spirit - Teacher</span>
+            </div>
+            <ul class="nav-links">
+                <li><a class="active" href="#dashboard">Dashboard</a></li>
+                <li><a href="#classroom">Classroom</a></li>
+                <li><a href="#assignments">Assignments</a></li>
+                <li><a href="#analytics">Analytics</a></li>
+                <li><a href="#resources">Resources</a></li>
+                <li class="nav-dropdown">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="ri-settings-3-line"></i> More
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#" onclick="openSettings()"><i class="ri-settings-line"></i> Settings</a></li>
+                        <li><a href="#" onclick="openHelp()"><i class="ri-question-line"></i> Help & Support</a></li>
+                        <li><a href="#" onclick="switchRole()"><i class="ri-exchange-line"></i> Switch Role</a></li>
+                        <li><a href="#" onclick="logout()"><i class="ri-logout-box-r-line"></i> Sign Out</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="teacher-main">
+        <!-- Hero Section -->
+        <section class="hero-section" id="dashboard">
+            <div class="hero-content">
+                <h1>Welcome Back, <span id="teacherName">Teacher</span>! 👋</h1>
+                <p>Manage your classrooms, create assignments, and track student progress all in one place.</p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" onclick="scrollToSection('classroom')">
+                        <i class="ri-add-line"></i> Create Classroom
+                    </button>
+                    <button class="btn btn-secondary" onclick="scrollToSection('assignments')">
+                        <i class="ri-file-list-line"></i> Create Assignment
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Stats -->
+        <section class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon classroom-icon">
+                    <i class="ri-building-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Active Classrooms</h3>
+                    <p class="stat-number" id="classroomCount">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon assignment-icon">
+                    <i class="ri-file-list-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Pending Assignments</h3>
+                    <p class="stat-number" id="assignmentCount">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon student-icon">
+                    <i class="ri-group-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Total Students</h3>
+                    <p class="stat-number" id="studentCount">0</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon submission-icon">
+                    <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>Submissions Today</h3>
+                    <p class="stat-number" id="submissionCount">0</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Grid -->
+        <section class="dashboard-grid">
+            <!-- Classrooms Section -->
+            <section class="dashboard-section" id="classroom">
+                <div class="section-header">
+                    <h2><i class="ri-building-line"></i> My Classrooms</h2>
+                    <button class="btn btn-small btn-primary" onclick="openClassroomModal()">
+                        <i class="ri-add-line"></i> New Classroom
+                    </button>
+                </div>
+                <div class="classroom-list" id="classroomList">
+                    <div class="empty-state">
+                        <i class="ri-building-2-line"></i>
+                        <p>No classrooms yet. Create your first classroom!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Assignments Section -->
+            <section class="dashboard-section" id="assignments">
+                <div class="section-header">
+                    <h2><i class="ri-file-list-line"></i> Recent Assignments</h2>
+                    <button class="btn btn-small btn-primary" onclick="openAssignmentModal()">
+                        <i class="ri-add-line"></i> New Assignment
+                    </button>
+                </div>
+                <div class="assignments-list" id="assignmentsList">
+                    <div class="empty-state">
+                        <i class="ri-file-list-line"></i>
+                        <p>No assignments yet. Create one to get started!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section class="dashboard-section full-width" id="analytics">
+                <div class="section-header">
+                    <h2><i class="ri-bar-chart-line"></i> Student Analytics</h2>
+                    <button class="btn btn-small btn-secondary" onclick="exportAnalytics()">
+                        <i class="ri-download-line"></i> Export Report
+                    </button>
+                </div>
+                <div class="analytics-container">
+                    <div class="chart-placeholder">
+                        <i class="ri-bar-chart-line"></i>
+                        <p>Analytics dashboard coming soon!</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resources Section -->
+            <section class="dashboard-section full-width" id="resources">
+                <div class="section-header">
+                    <h2><i class="ri-book-line"></i> Resource Library</h2>
+                    <button class="btn btn-small btn-primary" onclick="openResourceModal()">
+                        <i class="ri-upload-cloud-line"></i> Upload Resource
+                    </button>
+                </div>
+                <div class="resources-grid" id="resourcesList">
+                    <div class="empty-state">
+                        <i class="ri-book-open-line"></i>
+                        <p>No resources uploaded yet.</p>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <!-- Classroom Modal -->
+    <div class="modal" id="classroomModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Classroom</h2>
+                <span class="close" onclick="closeModal('classroomModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Class Name *</label>
+                    <input type="text" id="classroomName" placeholder="e.g., Grade 10 Biology" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Number of Students *</label>
+                    <input type="number" id="classroomStudents" placeholder="30" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Class Schedule</label>
+                    <input type="text" id="classroomSchedule" placeholder="e.g., MWF 10:00 AM" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="classroomDescription" placeholder="Class details..." class="form-input" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('classroomModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveClassroom()">Create Classroom</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignment Modal -->
+    <div class="modal" id="assignmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Assignment</h2>
+                <span class="close" onclick="closeModal('assignmentModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Assignment Title *</label>
+                    <input type="text" id="assignmentTitle" placeholder="e.g., Chapter 5 Quiz" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Select Classroom *</label>
+                    <select id="assignmentClassroom" class="form-input" onchange="loadClassroomStudents()">
+                        <option value="">Choose a classroom...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Assign to Students</label>
+                    <div id="studentSelection" class="student-selection">
+                        <p class="text-muted">Select a classroom first</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="assignmentDescription" placeholder="Assignment details..." class="form-input" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Due Date *</label>
+                        <input type="datetime-local" id="assignmentDueDate" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Type *</label>
+                        <select id="assignmentType" class="form-input">
+                            <option value="">Select type...</option>
+                            <option value="quiz">Quiz</option>
+                            <option value="homework">Homework</option>
+                            <option value="project">Project</option>
+                            <option value="essay">Essay</option>
+                            <option value="discussion">Discussion</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Max Points</label>
+                    <input type="number" id="assignmentPoints" placeholder="100" value="100" class="form-input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('assignmentModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveAssignment()">Create Assignment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Classroom Details Modal -->
+    <div class="modal" id="classroomDetailsModal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h2 id="classroomDetailsTitle">Classroom Details</h2>
+                <span class="close" onclick="closeModal('classroomDetailsModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="classroom-info">
+                    <h3>Classroom Information</h3>
+                    <p id="classroomInfo"></p>
+                </div>
+
+                <div class="students-section">
+                    <div class="section-header">
+                        <h3>Students</h3>
+                        <button class="btn btn-small btn-primary" onclick="openAddStudentModal()">
+                            <i class="ri-user-add-line"></i> Add Student
+                        </button>
+                    </div>
+                    <div class="quick-add-section" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="text" id="quickStudentId" placeholder="Enter Student ID" class="form-input" style="flex: 1;">
+                        <button class="btn btn-small btn-success" onclick="quickAddStudent()">
+                            <i class="ri-add-line"></i> Quick Add
+                        </button>
+                    </div>
+                    <div id="classroomStudentsList" class="students-list">
+                        <div class="empty-state">
+                            <i class="ri-group-line"></i>
+                            <p>No students in this classroom yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('classroomDetailsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignment Details Modal -->
+    <div class="modal" id="assignmentDetailsModal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h2 id="assignmentDetailsTitle">Assignment Details</h2>
+                <span class="close" onclick="closeModal('assignmentDetailsModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="assignment-info">
+                    <h3>Assignment Information</h3>
+                    <p id="assignmentInfo"></p>
+                </div>
+
+                <div class="students-section">
+                    <div class="section-header">
+                        <h3>Student Submissions</h3>
+                    </div>
+                    <div id="assignmentStudentsList" class="students-list">
+                        <div class="empty-state">
+                            <i class="ri-group-line"></i>
+                            <p>No students assigned yet.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('assignmentDetailsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div class="modal" id="addStudentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Student to Classroom</h2>
+                <span class="close" onclick="closeModal('addStudentModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Student ID *</label>
+                    <input type="text" id="studentIdInput" placeholder="e.g., STU0001" class="form-input">
+                    <small class="form-help">Enter the student's unique ID to add them to this classroom.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addStudentModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="addStudentToClassroom()">Add Student</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resource Modal -->
+    <div class="modal" id="resourceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload Resource</h2>
+                <span class="close" onclick="closeModal('resourceModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Resource Title *</label>
+                    <input type="text" id="resourceTitle" placeholder="e.g., Lecture Notes" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Resource Type *</label>
+                    <select id="resourceType" class="form-input">
+                        <option value="">Select type...</option>
+                        <option value="pdf">PDF</option>
+                        <option value="video">Video</option>
+                        <option value="document">Document</option>
+                        <option value="presentation">Presentation</option>
+                        <option value="worksheet">Worksheet</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>File *</label>
+                    <input type="file" id="resourceFile" class="form-input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('resourceModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveResource()">Upload Resource</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <span class="close" onclick="closeModal('settingsModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>Profile Information</h3>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" id="settingsName" class="form-input" placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="settingsEmail" class="form-input" placeholder="Your email" disabled>
+                    </div>
+                </div>
+                <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
+                <div class="settings-section">
+                    <h3>Preferences</h3>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="emailNotifications"> Receive email notifications
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('settingsModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Backdrop -->
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Scripts -->
+    <script src="teacher-dashboard.js"></script>
+
+    <!-- Accessibility widget -->
+    <script src="https://cdn.userway.org/widget.js" data-account="ertbJPpxpJ"></script>
+</body>
+
+</html>

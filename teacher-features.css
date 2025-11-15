@@ -1,0 +1,410 @@
+/* teacher-features.css - Modal Styles for Teacher Features */
+
+:root {
+    --primary: #083464;
+    --primary-light: #4895ef;
+    --secondary: #3f37c9;
+    --accent: #f72585;
+    --dark: #1a1a2e;
+    --light: #f8f9fa;
+    --gray: #6c757d;
+    --success: #4cc9f0;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 600px;
+    animation: slideIn 0.3s ease;
+    color: white;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 2px solid rgba(79, 70, 229, 0.3);
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.close {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--accent);
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.close:hover {
+    transform: scale(1.2);
+    color: white;
+}
+
+.modal-body {
+    padding: 2rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: rgba(79, 70, 229, 0.5);
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(79, 70, 229, 0.8);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--success);
+    font-size: 0.95rem;
+}
+
+.modal-input,
+.modal-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid rgba(79, 70, 229, 0.3);
+    border-radius: 8px;
+    background-color: rgba(30, 41, 59, 0.8);
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.modal-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.modal-input:focus,
+.modal-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    background-color: rgba(30, 41, 59, 0.95);
+    box-shadow: 0 0 10px rgba(247, 37, 133, 0.2);
+}
+
+textarea.modal-input {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Analytics Styles */
+.analytics-section {
+    margin-bottom: 2rem;
+}
+
+.analytics-section h3 {
+    margin-bottom: 1rem;
+    color: var(--success);
+    font-size: 1.1rem;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.analytics-card {
+    background: rgba(79, 70, 229, 0.1);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--accent);
+    text-align: center;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.analytics-card:hover {
+    transform: translateY(-5px);
+    background: rgba(79, 70, 229, 0.2);
+}
+
+.analytics-label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.analytics-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--success);
+    font-family: 'Orbitron', sans-serif;
+}
+
+.activity-list {
+    list-style: none;
+    padding: 0;
+}
+
+.activity-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: rgba(79, 70, 229, 0.1);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.activity-list li:hover {
+    background: rgba(79, 70, 229, 0.2);
+    transform: translateX(5px);
+}
+
+/* Resource Grid */
+.resource-section {
+    margin-bottom: 2rem;
+}
+
+.resource-section h3 {
+    margin-bottom: 1rem;
+    color: var(--success);
+    font-size: 1.1rem;
+}
+
+.resource-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.resource-card {
+    background: rgba(79, 70, 229, 0.1);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.resource-card:hover {
+    background: rgba(79, 70, 229, 0.2);
+    border-color: var(--accent);
+    transform: translateY(-5px);
+}
+
+.resource-card i {
+    font-size: 2.5rem;
+    color: var(--success);
+    margin-bottom: 0.5rem;
+}
+
+.resource-card h4 {
+    margin: 0.5rem 0;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.resource-card p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+}
+
+.upload-area {
+    background: rgba(79, 70, 229, 0.1);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 2px dashed rgba(79, 70, 229, 0.5);
+}
+
+.upload-area input,
+.upload-area select {
+    margin-bottom: 0.75rem;
+}
+
+/* Modal Footer */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    border-top: 2px solid rgba(79, 70, 229, 0.3);
+    background: rgba(15, 23, 42, 0.8);
+}
+
+.modal-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.modal-button.primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+}
+
+.modal-button.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
+}
+
+.modal-button.secondary {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-button.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 20% auto;
+    }
+
+    .modal-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-header h2 {
+        font-size: 1.25rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+        max-height: 70vh;
+    }
+
+    .modal-footer {
+        padding: 1rem 1.5rem;
+        flex-direction: column-reverse;
+    }
+
+    .modal-button {
+        width: 100%;
+    }
+
+    .analytics-grid,
+    .resource-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Light Mode Support */
+.light-mode .modal-content {
+    background: linear-gradient(135deg, #f0f4f8 0%, #e8eef8 100%);
+    color: var(--dark);
+}
+
+.light-mode .modal-header {
+    border-bottom-color: rgba(79, 70, 229, 0.2);
+    background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+}
+
+.light-mode .modal-header h2 {
+    color: var(--dark);
+}
+
+.light-mode .modal-input,
+.light-mode .modal-select {
+    background-color: white;
+    color: var(--dark);
+    border-color: rgba(79, 70, 229, 0.2);
+}
+
+.light-mode .modal-input:focus,
+.light-mode .modal-select:focus {
+    background-color: #f5f3ff;
+    border-color: var(--accent);
+}
+
+.light-mode .modal-body {
+    background: transparent;
+}
+
+.light-mode .modal-footer {
+    border-top-color: rgba(79, 70, 229, 0.2);
+    background: transparent;
+}
+
+.light-mode .form-group label {
+    color: var(--secondary);
+}
+
+.light-mode .analytics-card,
+.light-mode .resource-card,
+.light-mode .upload-area {
+    background: rgba(79, 70, 229, 0.05);
+    border-color: rgba(79, 70, 229, 0.2);
+}
+
+.light-mode .activity-list li {
+    background: rgba(79, 70, 229, 0.05);
+    color: var(--dark);
+}

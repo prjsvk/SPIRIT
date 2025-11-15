@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your Role - Spirit</title>
+    
+    <!-- Remixicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="role-selection.css">
+</head>
+
+<body>
+    <!-- Background Elements -->
+    <div class="background-gradient"></div>
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="role-container">
+        <!-- Header -->
+        <div class="role-header">
+            <div class="logo-section">
+                <i class="ri-leaf-fill"></i>
+                <h1>Spirit</h1>
+            </div>
+            <p class="subtitle">Choose your role to get started</p>
+        </div>
+
+        <!-- Role Selection Cards -->
+        <div class="role-cards">
+            <!-- Student Card -->
+            <div class="role-card student-card" onclick="selectRole('student')">
+                <div class="card-icon">
+                    <i class="ri-graduation-cap-line"></i>
+                </div>
+                <h2>Student</h2>
+                <p class="card-description">
+                    Access your dashboard, manage tasks, and track your progress.
+                </p>
+                <ul class="features-list">
+                    <li><i class="ri-check-line"></i> Task Management</li>
+                    <li><i class="ri-check-line"></i> Focus Timer</li>
+                    <li><i class="ri-check-line"></i> Mind Mapping</li>
+                    <li><i class="ri-check-line"></i> Study Groups</li>
+                </ul>
+                <button class="role-button student-button">
+                    Continue as Student
+                </button>
+            </div>
+
+            <!-- Teacher Card -->
+            <div class="role-card teacher-card" onclick="selectRole('teacher')">
+                <div class="card-icon teacher-icon">
+                    <i class="ri-user-teacher-line"></i>
+                </div>
+                <h2>Teacher</h2>
+                <p class="card-description">
+                    Manage classrooms, create assignments, and track student progress.
+                </p>
+                <ul class="features-list">
+                    <li><i class="ri-check-line"></i> Classroom Management</li>
+                    <li><i class="ri-check-line"></i> Assignment Creation</li>
+                    <li><i class="ri-check-line"></i> Student Analytics</li>
+                    <li><i class="ri-check-line"></i> Resource Sharing</li>
+                </ul>
+                <button class="role-button teacher-button">
+                    Continue as Teacher
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer Message -->
+        <div class="role-footer">
+            <p>Can't decide? You can change your role later in settings.</p>
+            <button class="logout-btn" onclick="logout()">
+                <i class="ri-logout-box-r-line"></i> Sign Out
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+        <div class="spinner"></div>
+        <p>Redirecting...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="role-selection.js"></script>
+
+    <!-- Accessibility Widget -->
+    <script src="https://cdn.userway.org/widget.js" data-account="ertbJPpxpJ"></script>
+</body>
+
+</html>
