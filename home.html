@@ -13,9 +13,11 @@
   <!-- CSS -->
   <link rel="stylesheet" href="home.css">
   <link rel="stylesheet" href="navbar.css">
-  <link rel="stylesheet" href="teacher-features.css">
 
   <style>
+    body {
+      padding-top: 100px;
+    }
 
     .toast {
       position: fixed;
@@ -90,18 +92,7 @@
         <li><a href="spiritradio.html">Radio</a></li>
         <li><a href="mindmap.html">Mind Map</a></li>
         <li><a href="chat.html">Chat</a></li>
-        <li class="nav-dropdown">
-          <a href="#" class="dropdown-toggle">
-            <i class="ri-settings-3-line"></i> Teacher Tools
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="#" onclick="openFeatureModal()"><i class="ri-add-circle-line"></i> Add New Feature</a></li>
-            <li><a href="#" onclick="openClassroomModal()"><i class="ri-group-line"></i> Manage Classroom</a></li>
-            <li><a href="#" onclick="openAssignmentModal()"><i class="ri-file-list-line"></i> Create Assignment</a></li>
-            <li><a href="#" onclick="openAnalyticsModal()"><i class="ri-bar-chart-line"></i> View Analytics</a></li>
-            <li><a href="#" onclick="openResourcesModal()"><i class="ri-book-line"></i> Resource Library</a></li>
-          </ul>
-        </li>
+        <li><a href="quiz.html">Quiz</a></li>
         <li><button onclick="location.href='index.html'" class="signout-button">Sign Out</button></li>
       </ul>
     </nav>
@@ -187,7 +178,6 @@ particlesJS("particles-js", {
       document.body.classList.toggle('light-mode');
     }
   </script>
-  <script src="teacher-features.js"></script>
   <script src="home.js"></script>
 
   <!--Accesibility widget-->

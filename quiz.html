@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="navbar.css">
+  <link rel="stylesheet" href="quiz.css">
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <i class="ri-leaf-fill"></i>
+        <span>Spirit</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="home.html">Dashboard</a></li>
+        <li><a href="FocusArena.html">Focus</a></li>
+        <li><a href="spiritradio.html">Radio</a></li>
+        <li><a href="mindmap.html">Mind Map</a></li>
+        <li><a href="chat.html">Chat</a></li>
+        <li><a class="active" href="quiz.html">Quiz</a></li>
+        <li><button onclick="location.href='index.html'" class="signout-button">Sign Out</button></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div id="quiz-container">
+    <h1>Spirit Quiz</h1>
+    
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+      <button id="create-mode-btn" class="mode-btn active">Create Quiz</button>
+      <button id="play-mode-btn" class="mode-btn">Quiz Game</button>
+      <button id="flashcard-mode-btn" class="mode-btn">Flashcards</button>
+      <button id="learn-mode-btn" class="mode-btn">Learn Mode</button>
+    </div>
+
+        <!-- Create Mode -->
+    <div id="create-section" class="quiz-section">
+      <div class="create-quiz">
+        <input type="text" id="quiz-title" placeholder="Quiz Title" class="quiz-input">
+        <select id="question-type-select" class="quiz-input">
+          <option value="multiple-choice">Multiple Choice (4 options)</option>
+          <option value="true-false">True/False</option>
+          <option value="fill-blank">Fill in the Blank</option>
+          <option value="short-answer">Short Answer</option>
+        </select>
+        <div id="questions-list"></div>
+        <button id="add-question-btn" class="add-btn">+ Add Question</button>
+        <button id="save-quiz-btn" class="save-btn">Save Quiz</button>
+      </div>
+    </div>
+
+    <!-- Play Mode (Kahoot-style) -->
+    <div id="play-section" class="quiz-section hidden">
+      <div class="quiz-select">
+        <label for="quiz-select">Choose Quiz:</label>
+        <select id="quiz-select">
+          <option value="backend">Random Questions</option>
+        </select>
+      </div>
+      <div class="game-stats">
+        <div id="score">Score: 0</div>
+        <div id="streak">🔥 Streak: 0</div>
+        <div id="progress">Progress: 0/0</div>
+      </div>
+      <div id="timer-bar" class="timer-bar">
+        <div id="timer-fill" class="timer-fill"></div>
+        <div id="timer-text">30</div>
+      </div>
+      <div id="question-card" class="question-card">
+        <div class="question-header">
+          <span id="question-number">Question 1</span>
+          <span id="points-worth">+10 points</span>
+        </div>
+        <div id="question" class="question-text"></div>
+        <div id="options" class="options-grid"></div>
+      </div>
+      <div id="feedback" class="feedback hidden">
+        <div id="feedback-icon"></div>
+        <div id="feedback-text"></div>
+      </div>
+    </div>
+
+    <!-- Create Mode -->
+    <div id="create-section" class="quiz-section hidden">
+      <div class="create-quiz">
+        <input type="text" id="quiz-title" placeholder="Quiz Title" class="quiz-input">
+        <select id="question-type-select" class="quiz-input">
+          <option value="multiple-choice">Multiple Choice</option>
+          <option value="true-false">True/False</option>
+          <option value="fill-blank">Fill in the Blank</option>
+          <option value="short-answer">Short Answer</option>
+        </select>
+        <div id="question-type-description" class="question-type-description"></div>
+        <div id="questions-list"></div>
+        <button id="add-question-btn" class="add-btn">+ Add Question</button>
+        <button id="save-quiz-btn" class="save-btn">Save Quiz</button>
+      </div>
+    </div>
+
+    <!-- Flashcard Mode (Quizlet-style) -->
+    <div id="flashcard-section" class="quiz-section hidden">
+      <div class="flashcard-container">
+        <div id="flashcard-select">
+          <label for="flashcard-quiz-select">Choose Quiz:</label>
+          <select id="flashcard-quiz-select">
+            <option value="">Select a quiz...</option>
+          </select>
+        </div>
+        <div class="study-modes">
+          <button id="flashcard-mode" class="study-mode-btn active">Flashcards</button>
+          <button id="learn-mode" class="study-mode-btn">Learn</button>
+          <button id="write-mode" class="study-mode-btn">Write</button>
+          <button id="spell-mode" class="study-mode-btn">Spell</button>
+        </div>
+        <div id="flashcard" class="flashcard">
+          <div class="flashcard-inner">
+            <div class="flashcard-front">
+              <div id="flashcard-question" class="flashcard-content"></div>
+              <div class="difficulty-buttons">
+                <button class="difficulty-btn" data-difficulty="1">😵 Hard</button>
+                <button class="difficulty-btn" data-difficulty="2">😐 Medium</button>
+                <button class="difficulty-btn" data-difficulty="3">😊 Easy</button>
+              </div>
+            </div>
+            <div class="flashcard-back">
+              <div id="flashcard-answer" class="flashcard-content"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flashcard-controls">
+          <button id="flip-card-btn" class="control-btn primary">👁️ Show Answer</button>
+          <button id="prev-card-btn" class="control-btn">⬅️ Previous</button>
+          <span id="card-counter">1 / 10</span>
+          <button id="next-card-btn" class="control-btn">Next ➡️</button>
+          <button id="shuffle-cards-btn" class="control-btn">🔀 Shuffle</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Learn Mode -->
+    <div id="learn-section" class="quiz-section hidden">
+      <div class="learn-container">
+        <div id="learn-select">
+          <label for="learn-quiz-select">Choose Quiz:</label>
+          <select id="learn-quiz-select">
+            <option value="">Select a quiz...</option>
+          </select>
+        </div>
+        <div class="learn-progress">
+          <div class="progress-bar">
+            <div id="learn-progress-fill" class="progress-fill"></div>
+          </div>
+          <div id="learn-stats">0 / 0 mastered</div>
+        </div>
+        <div id="learn-card" class="learn-card">
+          <div id="learn-question" class="learn-question"></div>
+          <div id="learn-options" class="learn-options"></div>
+          <button id="learn-submit-btn" class="learn-submit-btn">Submit</button>
+        </div>
+        <div id="learn-feedback" class="learn-feedback hidden">
+          <div id="learn-feedback-icon"></div>
+          <div id="learn-feedback-text"></div>
+          <button id="learn-next-btn" class="learn-next-btn">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="quiz.js"></script>
+</body>
+</html>

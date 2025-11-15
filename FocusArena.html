@@ -10,88 +10,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="navbar.css">
   <style>
-    header {
-      background: linear-gradient(135deg, #083464, #3f37c9);
-      color: white;
-      padding: 0 1rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-    }
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      font-family: 'Montserrat', sans-serif;
-      align-items: center;
-      max-width: 2000px;
-      margin: 0 auto;
-      padding: 0.5;
-    }
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-    }
-    .logo i {
-      margin-right: 0.5rem;
-      color: #f72585;
-    }
-    .nav-links {
-      display: flex;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    .signout-button {
-      background-color: #08bcfc;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-left: 2rem;
-      font-size: 1rem;
-      font-weight: bold;
-      transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-    .signout-button:hover {
-      background-color: #1084f4;
-      transform: scale(1.05);
-    }
-    .nav-links li {
-      margin-left: 2rem;
-    }
-    .nav-links a {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-    .nav-links a:hover {
-      color: #f72585;
-    }
-    .nav-links a.active {
-      color: #f72585;
-    }
-
-    
     body {
       margin: 0;
       padding: 0;
-      background: linear-gradient(270deg, #0f0c29, #302b63, #24243e);
-      background-size: 600% 600%;
-      animation: gradientShift 10s ease infinite;
-      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #1f1f2e, #11111c);
       color: white;
-      display: flex;
-      flex-direction: column;
+      font-family: 'Montserrat', sans-serif;
       min-height: 100vh;
-      align-items: center;
-      padding-top: 80px; /* Adjusted for fixed header */
+      width: 100%;
+      overflow-x: hidden;
+      padding-top: 100px; /* Adjusted for fixed header */
+      display: block;
     }
     @keyframes gradientShift {
       0% {background-position: 0% 50%;}
@@ -99,27 +28,30 @@
       100% {background-position: 0% 50%;}
     }
     .container {
-      max-width: 800px;
-      width: 90%;
-      text-align: center;
-      padding: 2rem;
-      background: rgba(15, 12, 41, 0.7);
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-      margin: 2rem auto;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      width: 100%;
+      background: none;
+      box-shadow: none;
+      border-radius: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+      backdrop-filter: none;
+      border: none;
     }
     h1 {
       font-size: 2.5rem;
       margin-bottom: 1rem;
-      color: #08bcfc;
-      text-shadow: 0 0 10px rgba(8, 188, 252, 0.5);
+      color: #60a5fa;
+      font-family: 'Orbitron', sans-serif;
+      text-shadow: none;
     }
     p {
       font-size: 1.1rem;
       margin-bottom: 2rem;
-      color: rgba(255, 255, 255, 0.8);
+      color: #cbd5e1;
+      font-family: 'Montserrat', sans-serif;
     }
     .input-group {
       display: flex;
@@ -129,59 +61,165 @@
       gap: 1rem;
       margin-bottom: 2rem;
     }
-    .focus-header{ text-align:center; margin-bottom:12px }
-    .focus-header .lead{ color: rgba(255,255,255,0.8); margin-top:6px }
-    .focus-grid{ display:grid; grid-template-columns: 1fr 340px; gap:20px; align-items:start; }
-    @media (max-width: 900px){ .focus-grid{ grid-template-columns: 1fr; } .control-panel{ order:2 } }
-    .video-card{ position:relative; width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#000; box-shadow:0 8px 30px rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.04) }
-    .video-card video, .video-card canvas{ position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; }
-    .info-section{ margin-top:16px; padding:12px; background:rgba(255,255,255,0.02); border-radius:10px; border:1px solid rgba(255,255,255,0.05); }
+    .focus-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .focus-header .lead {
+      color: #cbd5e1;
+      margin-top: 6px;
+      font-size: 1.1rem;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .focus-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    @media (max-width: 900px) {
+      .focus-grid { grid-template-columns: 1fr; }
+      .control-panel { order: 2; }
+    }
+    .video-panel {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 0 15px rgba(96, 165, 250, 0.4);
+      transition: transform 0.3s ease;
+    }
+    .video-panel:hover {
+      transform: translateY(-5px);
+    }
+    .video-card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+    .video-card video, .video-card canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .info-section {
+      margin-top: 16px;
+      padding: 1rem;
+      background: #334155;
+      border-radius: 10px;
+      border: none;
+      color: #cbd5e1;
+      font-family: 'Montserrat', sans-serif;
+    }
     .video-overlay{ position:absolute; left:12px; top:12px; z-index:5 }
     .focus-score{ background:rgba(0,0,0,0.5); padding:6px 10px; border-radius:8px; font-weight:600 }
-    .control-panel{ background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); padding:16px; border-radius:12px; color:#fff; border:1px solid rgba(255,255,255,0.03) }
+    .control-panel {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 0 15px rgba(96, 165, 250, 0.4);
+      color: #cbd5e1;
+      font-family: 'Montserrat', sans-serif;
+      border: none;
+      margin-bottom: 0;
+    }
     .control-panel label{ display:block; margin-bottom:6px }
     .control-panel input[type=number]{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); background:rgba(255,255,255,0.03); color:white }
     .btn-row{ margin-top:10px; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; }
     button.primary{ background: linear-gradient(135deg,#06b,#0366b0); color:#fff; border:none; padding:10px 14px; border-radius:8px; flex:1; min-width:140px; }
     button.warning{ background: linear-gradient(135deg,#ffb703,#ff9800); color:#04243b; border:none; padding:10px 14px; border-radius:8px; flex:1; min-width:140px; }
-    .timer-card{ margin-top:12px; text-align:center }
-    .timer{ font-size:3.2rem; color:#08bcfc; margin-bottom:8px }
-    .status{ background: rgba(255,255,255,0.03); padding:8px; border-radius:8px }
-    .progress{ height:10px; background: rgba(255,255,255,0.04); border-radius:999px; margin-top:10px; overflow:hidden }
-    .progress-inner{ height:100%; background: linear-gradient(90deg,#06b,#08bcfc); width:0%; transition:width 300ms ease }
-    .tips{ margin-top:14px; font-size:0.95rem }
-    .tips ul{ padding-left:18px; margin:6px 0 }
+    .timer-card {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    .timer {
+      font-size: 2rem;
+      color: #60a5fa;
+      margin-bottom: 8px;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .status {
+      background: #334155;
+      padding: 1rem;
+      border-radius: 10px;
+      color: #cbd5e1;
+      font-size: 1.1rem;
+      font-family: 'Montserrat', sans-serif;
+      display: inline-block;
+    }
+    .progress {
+      height: 10px;
+      background: #334155;
+      border-radius: 999px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+    .progress-inner {
+      height: 100%;
+      background: linear-gradient(90deg,#60a5fa,#3b82f6,#60a5fa);
+      width: 0%;
+      transition: width 300ms ease;
+    }
+    .tips {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      background: #334155;
+      border-radius: 10px;
+      padding: 1rem;
+      color: #cbd5e1;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .tips ul {
+      padding-left: 18px;
+      margin: 6px 0;
+    }
     label {
       font-size: 1.1rem;
-      color: rgba(255, 255, 255, 0.9);
+      color: #cbd5e1;
+      font-family: 'Montserrat', sans-serif;
+      margin-bottom: 0.5rem;
+      display: block;
     }
-    input {
-      padding: 12px 20px;
-      font-size: 1rem;
-      border: none;
+    input[type=number] {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 0.5rem;
+      margin-bottom: 1rem;
       border-radius: 8px;
-      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      background: #334155;
       color: white;
-      width: 80px;
-      text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 1rem;
+      font-family: 'Montserrat', sans-serif;
+      box-sizing: border-box;
     }
     button {
-      padding: 12px 30px;
-      font-size: 1rem;
+      background: #3b82f6;
+      color: white;
       border: none;
       border-radius: 8px;
-      margin: 10px;
+      padding: 1rem 1.5rem;
       cursor: pointer;
-      background: linear-gradient(135deg, #08bcfc, #0062ff);
-      color: white;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(8, 188, 252, 0.3);
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'Montserrat', sans-serif;
+      transition: background 0.2s ease-in-out;
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(96, 165, 250, 0.2);
     }
     button:hover {
+      background: #2563eb;
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(8, 188, 252, 0.4);
+      box-shadow: 0 6px 20px rgba(96, 165, 250, 0.3);
     }
     #timerDisplay {
       font-size: 3.56rem;
@@ -213,9 +251,7 @@
       height: auto;
       margin: 0 auto;
     }
-    .nav-links li {
-      margin-left: var(--space-lg);
-    }
+    /* .nav-links li spacing handled by navbar.css gap property for consistency */
     #quotes-container {
       height: 400px;
       background: linear-gradient(135deg, #ffffff 0%, #e6f7ff 100%);
@@ -247,45 +283,49 @@
     }
     @media (max-width: 768px) {
       .container {
-        width: 95%;
-        padding: 1.5rem;
+        width: 100%;
+        padding: 0.75rem;
       }
-      
       h1 {
         font-size: 2rem;
       }
-      
-      #timerDisplay {
-        font-size: 2.67rem;
+      .focus-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
       }
-      
-      .input-group {
-        flex-direction: column;
+      .video-panel, .control-panel {
+        padding: 1rem;
       }
-      
+      .tips, .info-section {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+      }
       .navbar {
         padding: 1rem;
       }
     }
   </style>
 </head>
-<header>
-  <nav class="navbar">
-    <div class="logo">
-      <i class="ri-leaf-fill"></i>
-      <span>Spirit</span>
-    </div>
-    <ul class="nav-links">
-      <li><a href="home.html">Dashboard</a></li>
-      <li><a class="active" href="FocusArena.html">Focus</a></li>
-      <li><a href="spiritradio.html">Radio</a></li>
-      <li><a href="mindmap.html">Mind Map</a></li>
-      <li><a href="chat.html">Chat</a></li>
-      <li><button onclick="location.href='index.html'" class="signout-button">Sign Out</button></li>
-    </ul>
-  </nav>
-</header>
 <body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <i class="ri-leaf-fill"></i>
+        <span>Spirit</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="home.html">Dashboard</a></li>
+        <li><a class="active" href="FocusArena.html">Focus</a></li>
+        <li><a href="spiritradio.html">Radio</a></li>
+        <li><a href="mindmap.html">Mind Map</a></li>
+        <li><a href="chat.html">Chat</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><button onclick="location.href='index.html'" class="signout-button">Sign Out</button></li>
+      </ul>
+    </nav>
+  </header>
+
   <div class="container">
     <div class="focus-header">
       <h1>Focus Arena <i class="ri-fire-fill" style="color: #ff6b6b;"></i></h1>

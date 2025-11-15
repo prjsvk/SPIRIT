@@ -44,15 +44,133 @@
       color: var(--accent);
     }
 
-    .chat-container {
-      max-width: 1000px;
-      margin: 2rem auto;
+    /* Main Layout */
+    .main-layout {
+      display: flex;
+      height: calc(100vh - 100px);
+      margin-top: 100px;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      background: rgba(15, 23, 42, 0.95);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
       padding: 1rem;
-      height: calc(100vh - 150px);
+      overflow-y: auto;
+    }
+
+    .new-chat-btn {
+      background: linear-gradient(135deg, var(--accent), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .new-chat-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(247, 37, 133, 0.4);
+    }
+
+    .chat-history-title {
+      font-size: 0.9rem;
+      color: var(--gray);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .chat-history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .chat-history-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .chat-history-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .chat-history-item.active {
+      background: rgba(247, 37, 133, 0.2);
+      border-color: var(--accent);
+    }
+
+    .chat-history-item-title {
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-history-item-date {
+      font-size: 0.75rem;
+      color: var(--gray);
+    }
+
+    .chat-history-item-delete {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 0, 0, 0.3);
+      border: none;
+      color: white;
+      padding: 0.3rem 0.5rem;
+      border-radius: 5px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .chat-history-item:hover .chat-history-item-delete {
+      opacity: 1;
+    }
+
+    .chat-container {
+      flex: 1;
+      padding: 2rem;
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .chat-container::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(63, 55, 201, 0.1) 0%, rgba(15, 23, 42, 1) 70%);
+      z-index: -1;
+      animation: pulse 15s infinite alternate;
     }
 
     .chat-container::before {
@@ -104,6 +222,7 @@
       padding: 1rem;
       margin-bottom: 1rem;
       scroll-behavior: smooth;
+      min-height: 0;
     }
 
     .message {
@@ -158,6 +277,8 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+      margin-top: auto;
     }
 
     .chat-input {
@@ -169,6 +290,16 @@
       color: white;
       font-size: 1rem;
       outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .chat-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .chat-input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 0 2px var(--accent);
     }
 
     .send-button {
@@ -184,10 +315,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .send-button:hover {
-      transform: translateY(-2px);
     }
 
     .floating-bubble {
@@ -219,6 +346,55 @@
       }
     }
 
+    /* Loading Indicator */
+    .loading-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 1.5rem;
+      background: var(--ai-bubble);
+      border-radius: 20px;
+      border-bottom-left-radius: 5px;
+      max-width: fit-content;
+      animation: floatIn 0.5s ease-out;
+    }
+
+    .loading-dots {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .loading-dot {
+      width: 8px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      animation: loadingBounce 1.4s infinite ease-in-out;
+    }
+
+    .loading-dot:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .loading-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .loading-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes loadingBounce {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.7;
+      }
+      30% {
+        transform: translateY(-10px);
+        opacity: 1;
+      }
+    }
+
     #voiceButton {
       background: linear-gradient(135deg, var(--primary-light), var(--accent));
       margin-left: 0.5rem;
@@ -242,6 +418,30 @@
       50% { box-shadow: 0 0 20px var(--primary-light); }
       100% { box-shadow: 0 0 10px var(--accent); }
     }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -280px;
+        top: 80px;
+        height: calc(100vh - 80px);
+        z-index: 100;
+        transition: left 0.3s ease;
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .main-layout {
+        flex-direction: column;
+      }
+
+      .chat-container {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -256,7 +456,8 @@
         <li><a href="FocusArena.html">Focus</a></li>
         <li><a href="spiritradio.html">Radio</a></li>
         <li><a href="mindmap.html">Mind Map</a></li>
-        <li><a class="active" href="chat.html" class="active">Chat</a></li>
+        <li><a href="chat.html" class="active">Chat</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
         <li>
           <button onclick="location.href='index.html'" class="signout-button">Sign Out</button>
         </li>
@@ -264,12 +465,26 @@
     </nav>
   </header>
 
-  <div class="chat-container" id="chatContainer">
-    <div class="floating-bubble">Spirit AI v3.0</div>
-    <div class="chat-header">
-      <h1>Spirit AI</h1>
-      <p>Your Time-Traveling Productivity Assistant</p>
+  <div class="main-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <button class="new-chat-btn" id="newChatBtn">
+        <i class="ri-add-line"></i>
+        New Chat
+      </button>
+      <div class="chat-history-title">Chat History</div>
+      <div class="chat-history-list" id="chatHistoryList">
+        <!-- Chat history items will be inserted here -->
+      </div>
     </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-container" id="chatContainer">
+      <div class="floating-bubble">Spirit AI v3.0</div>
+      <div class="chat-header">
+        <h1>Spirit AI</h1>
+        <p>Your Time-Traveling Productivity Assistant</p>
+      </div>
     <div class="chat-messages" id="chatMessages">
       <div class="message message-ai">
         <div class="ai-avatar"><i class="ri-robot-2-line"></i></div>
@@ -286,6 +501,7 @@
       <button class="send-button" id="sendButton"><i class="ri-send-plane-fill"></i></button>
       <button class="send-button" id="voiceButton" title="Speak"><i class="ri-mic-fill" id="micIcon"></i></button>
     </div>
+    </div>
   </div>
 
   <script>
@@ -295,16 +511,121 @@
         const sendButton = document.getElementById('sendButton');
         const voiceButton = document.getElementById('voiceButton');
         const typingIndicator = document.getElementById('typingIndicator');
+        const newChatBtn = document.getElementById('newChatBtn');
+        const chatHistoryList = document.getElementById('chatHistoryList');
 
-        let conversationHistory = JSON.parse(localStorage.getItem('spiritChatHistory')) || [];
+        // Chat management
+        let allChats = JSON.parse(localStorage.getItem('spiritAllChats')) || [];
+        let currentChatId = localStorage.getItem('spiritCurrentChatId') || null;
+        let conversationHistory = [];
         let moodState = "neutral";
 
-        // Initial greeting
-        if (conversationHistory.length === 0) {
-          addMessage('ai', "👋 Hey there! I'm Spirit AI — your personal productivity time traveler. What are we focusing on today?");
+        // Initialize
+        if (allChats.length === 0) {
+          createNewChat();
         } else {
-          conversationHistory.forEach(msg => addMessage(msg.role, msg.content, false));
+          if (currentChatId && allChats.find(c => c.id === currentChatId)) {
+            loadChat(currentChatId);
+          } else {
+            loadChat(allChats[0].id);
+          }
         }
+        renderChatHistory();
+
+        function generateChatId() {
+          return 'chat_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function createNewChat() {
+          const newChat = {
+            id: generateChatId(),
+            title: 'New Chat',
+            messages: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          allChats.unshift(newChat);
+          localStorage.setItem('spiritAllChats', JSON.stringify(allChats));
+          currentChatId = newChat.id;
+          localStorage.setItem('spiritCurrentChatId', currentChatId);
+          conversationHistory = [];
+          chatMessages.innerHTML = '';
+          addMessage('ai', "👋 Hey there! I'm Spirit AI — your personal productivity time traveler. What are we focusing on today?", false);
+          renderChatHistory();
+        }
+
+        function loadChat(chatId) {
+          const chat = allChats.find(c => c.id === chatId);
+          if (!chat) return;
+          
+          currentChatId = chatId;
+          localStorage.setItem('spiritCurrentChatId', currentChatId);
+          conversationHistory = chat.messages || [];
+          
+          chatMessages.innerHTML = '';
+          if (conversationHistory.length === 0) {
+            addMessage('ai', "👋 Hey there! I'm Spirit AI — your personal productivity time traveler. What are we focusing on today?", false);
+          } else {
+            conversationHistory.forEach(msg => addMessage(msg.role, msg.content, false));
+          }
+          renderChatHistory();
+        }
+
+        function saveCurrentChat() {
+          const chat = allChats.find(c => c.id === currentChatId);
+          if (chat) {
+            chat.messages = conversationHistory;
+            chat.updatedAt = new Date().toISOString();
+            
+            // Update title based on first user message
+            if (conversationHistory.length > 0 && chat.title === 'New Chat') {
+              const firstUserMsg = conversationHistory.find(m => m.role === 'user');
+              if (firstUserMsg) {
+                chat.title = firstUserMsg.content.substring(0, 30) + (firstUserMsg.content.length > 30 ? '...' : '');
+              }
+            }
+            
+            localStorage.setItem('spiritAllChats', JSON.stringify(allChats));
+          }
+        }
+
+        function deleteChat(chatId) {
+          allChats = allChats.filter(c => c.id !== chatId);
+          localStorage.setItem('spiritAllChats', JSON.stringify(allChats));
+          
+          if (currentChatId === chatId) {
+            if (allChats.length > 0) {
+              loadChat(allChats[0].id);
+            } else {
+              createNewChat();
+            }
+          }
+          renderChatHistory();
+        }
+
+        function renderChatHistory() {
+          chatHistoryList.innerHTML = '';
+          allChats.forEach(chat => {
+            const item = document.createElement('div');
+            item.className = 'chat-history-item' + (chat.id === currentChatId ? ' active' : '');
+            item.innerHTML = `
+              <div class="chat-history-item-title">${chat.title}</div>
+              <div class="chat-history-item-date">${new Date(chat.updatedAt).toLocaleDateString()}</div>
+              <button class="chat-history-item-delete" onclick="event.stopPropagation();">
+                <i class="ri-delete-bin-line"></i>
+              </button>
+            `;
+            item.addEventListener('click', () => loadChat(chat.id));
+            item.querySelector('.chat-history-item-delete').addEventListener('click', () => {
+              if (confirm('Delete this chat?')) {
+                deleteChat(chat.id);
+              }
+            });
+            chatHistoryList.appendChild(item);
+          });
+        }
+
+        newChatBtn.addEventListener('click', createNewChat);
 
         function formatMessage(text) {
           let formatted = text
@@ -326,7 +647,32 @@
           chatMessages.scrollTop = chatMessages.scrollHeight;
           if (saveToHistory) {
             conversationHistory.push({ role, content });
-            localStorage.setItem('spiritChatHistory', JSON.stringify(conversationHistory));
+            saveCurrentChat();
+          }
+        }
+
+        function showLoadingIndicator() {
+          const loadingDiv = document.createElement('div');
+          loadingDiv.className = 'message message-ai';
+          loadingDiv.id = 'loadingIndicator';
+          loadingDiv.innerHTML = `
+            <div class="ai-avatar"><i class="ri-robot-2-line"></i></div>
+            <div class="loading-indicator">
+              <div class="loading-dots">
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+                <span class="loading-dot"></span>
+              </div>
+            </div>
+          `;
+          chatMessages.appendChild(loadingDiv);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideLoadingIndicator() {
+          const loadingDiv = document.getElementById('loadingIndicator');
+          if (loadingDiv) {
+            loadingDiv.remove();
           }
         }
 
@@ -345,6 +691,21 @@
         }
 
         async function getAIResponse(userMessage) {
+          // Check for default questions first
+          const lowerMessage = userMessage.toLowerCase();
+          
+          if (lowerMessage.includes("what is a hackathon") || lowerMessage.includes("what's a hackathon")) {
+            return "🚀 A hackathon is an exciting collaborative event where developers, designers, and innovators come together to build creative projects within a limited timeframe (usually 24-48 hours). It's like a sprint for innovation! Participants form teams, brainstorm ideas, code intensively, and present their prototypes. Hackathons are great for learning new skills, networking, and turning ideas into reality. Many successful startups and products have been born at hackathons!";
+          }
+          
+          if (lowerMessage.includes("what is an llm") || lowerMessage.includes("what's an llm") || lowerMessage.includes("what is a llm")) {
+            return "🤖 An LLM (Large Language Model) is an AI system trained on vast amounts of text data to understand and generate human-like language. Think of it as a highly sophisticated pattern recognizer that learned from billions of words across books, websites, and documents. LLMs like GPT, Claude, and Gemini can write, answer questions, code, translate, and more. They work by predicting the most likely next word based on context, using neural networks with billions of parameters. I'm powered by similar technology to help you be more productive!";
+          }
+          
+          if (lowerMessage.includes("how many bones") && (lowerMessage.includes("adult human") || lowerMessage.includes("human body"))) {
+            return "🦴 An adult human body has 206 bones! Interestingly, babies are born with around 270 bones, but as they grow, some of these bones fuse together. The skeleton provides structure, protects vital organs, stores minerals, produces blood cells, and enables movement. The smallest bone is the stapes in the ear (about 3mm), while the largest is the femur (thigh bone). Fun fact: More than half of your bones are in your hands and feet!";
+          }
+
           const isSimulated = detectSimulationPrompt(userMessage);
           moodState = detectMood(userMessage);
 
@@ -378,11 +739,20 @@
           if (!message) return;
           addMessage('user', message);
           userInput.value = '';
-          typingIndicator.style.display = 'flex';
+          showLoadingIndicator();
           chatMessages.scrollTop = chatMessages.scrollHeight;
-          const aiReply = await getAIResponse(message);
+
+          // Start fetching the AI response
+          const aiReplyPromise = getAIResponse(message);
+          
+          // Wait for at least 8 seconds
+          const minLoadingTime = new Promise(resolve => setTimeout(resolve, 8000));
+          
+          // Wait for both the response and the minimum loading time
+          const [aiReply] = await Promise.all([aiReplyPromise, minLoadingTime]);
+          
+          hideLoadingIndicator();
           addMessage('ai', aiReply);
-          typingIndicator.style.display = 'none';
         }
 
         sendButton.onclick = sendMessage;

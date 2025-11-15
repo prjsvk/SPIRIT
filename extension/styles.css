@@ -1,0 +1,20 @@
+:root{
+  --bg:#ffffff;
+  --accent:#1e88e5;
+  --muted:#6b7280;
+}
+body{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:#111; margin:0; padding:12px; width:320px}
+.container{display:flex;flex-direction:column;gap:10px}
+h1{font-size:18px;margin:0}
+.toggle-row{display:flex;align-items:center;gap:10px}
+.switch{position:relative;display:inline-block;width:46px;height:26px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#ccc;transition:.2s;border-radius:26px}
+.slider:before{position:absolute;content:"";height:20px;width:20px;left:3px;bottom:3px;background:white;transition:.2s;border-radius:50%}
+.switch input:checked + .slider{background:var(--accent)}
+.switch input:checked + .slider:before{transform:translateX(20px)}
+.blocked-sites{margin-top:6px}
+.blocked-sites h2{font-size:13px;margin:6px 0;color:var(--muted)}
+#sitesList{list-style:none;padding:0;margin:0}
+#sitesList li{font-size:13px;padding:6px 0;border-bottom:1px solid #f2f3f5}
+.footer-note{font-size:12px;color:var(--muted);margin-top:8px}
