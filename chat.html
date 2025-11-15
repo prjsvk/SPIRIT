@@ -275,6 +275,11 @@
         <div class="ai-avatar"><i class="ri-robot-2-line"></i></div>
         <div class="message-bubble">Hey 👋 I'm Spirit. Ready to optimize your timeline? Drop your thoughts below, and let's shape the future.</div>
       </div>
+        <div class="typing-indicator" id="typingIndicator" style="display:none;">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
     </div>
     <div class="chat-input-container">
       <input type="text" class="chat-input" id="userInput" placeholder="Type your command or journal entry..." autocomplete="off">
@@ -284,85 +289,124 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const chatMessages = document.getElementById('chatMessages');
-      const userInput = document.getElementById('userInput');
-      const sendButton = document.getElementById('sendButton');
-      const voiceButton = document.getElementById('voiceButton');
+      document.addEventListener('DOMContentLoaded', () => {
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const voiceButton = document.getElementById('voiceButton');
+        const typingIndicator = document.getElementById('typingIndicator');
 
-  // Client configuration: use server-side proxy to keep keys secret
-  // By default this project provides two possible server proxies:
-  // 1) The existing Node/Express proxy at /api/gemini (in /backend)
-  // 2) A new Python Flask proxy at http://localhost:5000/api/chat (recommended for local dev)
-  // Set API_MODE = 'proxy' and pick the URL you run locally. If you run the Python backend,
-  // change API_PROXY_URL to 'http://localhost:5000/api/chat'.
-  const API_MODE = 'proxy'; // 'proxy' or 'direct'
-  // Default to Python backend on localhost; change to '/api/gemini' to use the Node proxy bundled in /backend
-  const API_PROXY_URL = 'http://localhost:5000/api/chat';
+        let conversationHistory = JSON.parse(localStorage.getItem('spiritChatHistory')) || [];
+        let moodState = "neutral";
 
-      function addMessage(role, content) {
-        const msg = document.createElement('div');
-        msg.className = `message message-${role}`;
-        msg.innerHTML = role === 'ai'
-          ? `<div class="ai-avatar"><i class="ri-robot-2-line"></i></div><div class="message-bubble">${content}</div>`
-          : `<div class="message-bubble">${content}</div>`;
-        chatMessages.appendChild(msg);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }
+        // Initial greeting
+        if (conversationHistory.length === 0) {
+          addMessage('ai', "👋 Hey there! I'm Spirit AI — your personal productivity time traveler. What are we focusing on today?");
+        } else {
+          conversationHistory.forEach(msg => addMessage(msg.role, msg.content, false));
+        }
 
-      async function sendMessageToAI(message) {
-        addMessage('user', message);
-        userInput.value = '';
-        try {
-          let replyText = '';
-          if (API_MODE === 'proxy') {
-            const res = await fetch(API_PROXY_URL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ message, history: [] })
-            });
-            const json = await res.json();
-            replyText = json.reply || json?.choices?.[0]?.message?.content || '';
+        function formatMessage(text) {
+          let formatted = text
+            .replace(/[*_~`#>]+/g, '')
+            .replace(/\n{2,}/g, '</p><p>')
+            .replace(/\n/g, '<br>')
+            .replace(/```(\w*)\n?([\s\S]+?)```/g, '<pre><code>$2</code></pre>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>');
+          return `<p>${formatted}</p>`;
+        }
+
+        function addMessage(role, content, saveToHistory = true) {
+          const msg = document.createElement('div');
+          msg.className = `message message-${role}`;
+          msg.innerHTML = role === 'ai'
+            ? `<div class="ai-avatar"><i class="ri-robot-2-line"></i></div><div class="message-bubble">${formatMessage(content)}</div>`
+            : `<div class="message-bubble">${formatMessage(content)}</div>`;
+          chatMessages.appendChild(msg);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          if (saveToHistory) {
+            conversationHistory.push({ role, content });
+            localStorage.setItem('spiritChatHistory', JSON.stringify(conversationHistory));
+          }
+        }
+
+        function detectSimulationPrompt(input) {
+          const triggers = ["what if i", "skip", "miss", "delay", "postpone"];
+          return triggers.some(trigger => input.toLowerCase().includes(trigger));
+        }
+
+        function detectMood(input) {
+          const text = input.toLowerCase();
+          if (text.includes("burned out") || text.includes("exhausted") || text.includes("tired")) return "tired";
+          if (text.includes("stressed") || text.includes("pressure")) return "stressed";
+          if (text.includes("great") || text.includes("excited")) return "motivated";
+          if (text.includes("sad") || text.includes("lazy")) return "low";
+          return "neutral";
+        }
+
+        async function getAIResponse(userMessage) {
+          const isSimulated = detectSimulationPrompt(userMessage);
+          moodState = detectMood(userMessage);
+
+          let systemPrompt = "";
+          if (isSimulated) {
+            systemPrompt = `You are Spirit AI, a futuristic assistant. Simulate the outcome of missed or skipped tasks using a cascading chain of consequences (ChronoLoop Simulation). Be realistic, engaging, and use emoji sparingly for emotional impact.`;
           } else {
-            // direct mode (not recommended) - not implemented here for safety
-            replyText = 'Direct mode is disabled for security.';
+            systemPrompt = `You are Spirit AI — a smart, emotionally aware productivity assistant. The user's current mood is "${moodState}". Based on that, respond with empathy and either encouragement or relief. If they seem demotivated, suggest a lighter alternative. If they’re overconfident, balance with realism.`;
           }
 
-          addMessage('ai', (replyText || 'Sorry, no reply received.').replace(/\n/g, '<br>'));
-        } catch (err) {
-          console.error(err);
-          addMessage('ai', "Something went wrong.");
+          try {
+            // GET /generate?prompt=...
+            const url = `http://127.0.0.1:5000/generate?prompt=${encodeURIComponent(userMessage)}`;
+            typingIndicator.style.display = 'flex';
+            const res = await fetch(url, {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' },
+            });
+            const json = await res.json();
+            typingIndicator.style.display = 'none';
+            return json.response || json.reply || json?.choices?.[0]?.message?.content || '';
+          } catch (err) {
+            typingIndicator.style.display = 'none';
+            console.error(err);
+            return "⚠️ I couldn’t connect to my futuristic servers. Try again soon!";
+          }
         }
-      }
 
-      sendButton.onclick = () => {
-        if (userInput.value.trim()) sendMessageToAI(userInput.value.trim());
-      };
+        async function sendMessage() {
+          const message = userInput.value.trim();
+          if (!message) return;
+          addMessage('user', message);
+          userInput.value = '';
+          typingIndicator.style.display = 'flex';
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          const aiReply = await getAIResponse(message);
+          addMessage('ai', aiReply);
+          typingIndicator.style.display = 'none';
+        }
 
-      userInput.addEventListener("keypress", e => {
-        if (e.key === "Enter" && userInput.value.trim()) sendMessageToAI(userInput.value.trim());
+        sendButton.onclick = sendMessage;
+        userInput.addEventListener("keypress", e => {
+          if (e.key === "Enter") sendMessage();
+        });
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          const recognition = new SpeechRecognition();
+          recognition.lang = 'en-US';
+          recognition.continuous = false;
+          recognition.onstart = () => voiceButton.classList.add("glowing");
+          recognition.onend = () => voiceButton.classList.remove("glowing");
+          recognition.onresult = e => {
+            const transcript = e.results[0][0].transcript;
+            userInput.value = transcript;
+          };
+          voiceButton.onclick = () => recognition.start();
+        } else {
+          voiceButton.disabled = true;
+          voiceButton.title = "Voice input not supported.";
+        }
       });
-
-      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'en-US';
-        recognition.continuous = false;
-
-        recognition.onstart = () => voiceButton.classList.add("glowing");
-        recognition.onend = () => voiceButton.classList.remove("glowing");
-
-        recognition.onresult = e => {
-          const transcript = e.results[0][0].transcript;
-          userInput.value = transcript;
-        };
-
-        voiceButton.onclick = () => recognition.start();
-      } else {
-        voiceButton.disabled = true;
-        voiceButton.title = "Voice input not supported.";
-      }
-    });
   </script>
   <!--Accesibility widget-->
   <script src="https://cdn.userway.org/widget.js" data-account="ertbJPpxpJ"></script>
