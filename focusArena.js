@@ -119,6 +119,13 @@ async function monitorFocus() {
         document.getElementById("status").innerText = "Face detected. Timer resumed 🧠";
       }
       if(lookAwayCount>0) lookAwayCount = 0;
+    } else {
+      faceDetected = false;
+      // No face detected - pause timer if not already paused by face detection
+      if (!timerPausedByFaceDetection) {
+        timerPausedByFaceDetection = true;
+        document.getElementById("status").innerText = " ❌ Face not detected. Timer paused.";
+      }
     }
   } catch(e) {
     console.warn('monitorFocus error', e);
