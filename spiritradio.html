@@ -118,10 +118,10 @@
     .input-group select {
       width: 100%;
       padding: 1rem;
-      background: rgba(13, 13, 26, 0.7);
+      background: white;
       border: 1px solid var(--neon-purple);
       border-radius: 10px;
-      color: white;
+      color: black;
       font-size: 1rem;
       appearance: none;
       outline: none;
@@ -132,6 +132,12 @@
     .input-group select:focus {
       border-color: var(--neon-blue);
       box-shadow: 0 0 20px rgba(76, 201, 240, 0.4);
+      background: rgba(13, 13, 26, 0.7);
+    }
+
+    .input-group select option {
+      color: black;
+      background: white;
     }
 
     /* Holographic Button */
@@ -139,7 +145,7 @@
       width: 100%;
       padding: 1.2rem;
       background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
-      color: white;
+      color: white !important;
       border: none;
       border-radius: 10px;
       font-size: 1.2rem;
@@ -347,6 +353,7 @@
       <li><a class="active" href="spiritradio.html">Radio</a></li>
       <li><a href="mindmap.html">Mind Map</a></li>
       <li><a href="chat.html">Chat</a></li>
+      <li><a href="quiz.html">Quiz</a></li>
       <li>
         <button onclick="location.href='index.html'" class="signout-button">Sign Out</button>
       </li>

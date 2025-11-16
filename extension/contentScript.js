@@ -1,4 +1,16 @@
 // contentScript.js
+// Listen for Focus Arena session start messages from the page
+window.addEventListener('message', function(event) {
+  if (event.source !== window) return;
+  const msg = event.data;
+  if (msg && msg.type === 'SPIRIT_FOCUS_START') {
+    chrome.runtime.sendMessage({
+      type: 'START_FOCUS',
+      spiritUrl: msg.spiritUrl,
+      expiresAt: msg.expiresAt
+    });
+  }
+});
 // Injects a centered bold overlay when a focus session is active.
 
 function ensureOverlay() {

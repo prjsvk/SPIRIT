@@ -36,19 +36,12 @@
       <button id="create-mode-btn" class="mode-btn active">Create Quiz</button>
       <button id="play-mode-btn" class="mode-btn">Quiz Game</button>
       <button id="flashcard-mode-btn" class="mode-btn">Flashcards</button>
-      <button id="learn-mode-btn" class="mode-btn">Learn Mode</button>
     </div>
 
-        <!-- Create Mode -->
+    <!-- Create Mode -->
     <div id="create-section" class="quiz-section">
       <div class="create-quiz">
         <input type="text" id="quiz-title" placeholder="Quiz Title" class="quiz-input">
-        <select id="question-type-select" class="quiz-input">
-          <option value="multiple-choice">Multiple Choice (4 options)</option>
-          <option value="true-false">True/False</option>
-          <option value="fill-blank">Fill in the Blank</option>
-          <option value="short-answer">Short Answer</option>
-        </select>
         <div id="questions-list"></div>
         <button id="add-question-btn" class="add-btn">+ Add Question</button>
         <button id="save-quiz-btn" class="save-btn">Save Quiz</button>
@@ -83,23 +76,7 @@
       <div id="feedback" class="feedback hidden">
         <div id="feedback-icon"></div>
         <div id="feedback-text"></div>
-      </div>
-    </div>
-
-    <!-- Create Mode -->
-    <div id="create-section" class="quiz-section hidden">
-      <div class="create-quiz">
-        <input type="text" id="quiz-title" placeholder="Quiz Title" class="quiz-input">
-        <select id="question-type-select" class="quiz-input">
-          <option value="multiple-choice">Multiple Choice</option>
-          <option value="true-false">True/False</option>
-          <option value="fill-blank">Fill in the Blank</option>
-          <option value="short-answer">Short Answer</option>
-        </select>
-        <div id="question-type-description" class="question-type-description"></div>
-        <div id="questions-list"></div>
-        <button id="add-question-btn" class="add-btn">+ Add Question</button>
-        <button id="save-quiz-btn" class="save-btn">Save Quiz</button>
+        <button id="continue-btn" class="continue-btn">Continue</button>
       </div>
     </div>
 
@@ -114,19 +91,11 @@
         </div>
         <div class="study-modes">
           <button id="flashcard-mode" class="study-mode-btn active">Flashcards</button>
-          <button id="learn-mode" class="study-mode-btn">Learn</button>
-          <button id="write-mode" class="study-mode-btn">Write</button>
-          <button id="spell-mode" class="study-mode-btn">Spell</button>
         </div>
         <div id="flashcard" class="flashcard">
           <div class="flashcard-inner">
             <div class="flashcard-front">
               <div id="flashcard-question" class="flashcard-content"></div>
-              <div class="difficulty-buttons">
-                <button class="difficulty-btn" data-difficulty="1">😵 Hard</button>
-                <button class="difficulty-btn" data-difficulty="2">😐 Medium</button>
-                <button class="difficulty-btn" data-difficulty="3">😊 Easy</button>
-              </div>
             </div>
             <div class="flashcard-back">
               <div id="flashcard-answer" class="flashcard-content"></div>
@@ -134,39 +103,13 @@
           </div>
         </div>
         <div class="flashcard-controls">
-          <button id="flip-card-btn" class="control-btn primary">👁️ Show Answer</button>
           <button id="prev-card-btn" class="control-btn">⬅️ Previous</button>
-          <span id="card-counter">1 / 10</span>
           <button id="next-card-btn" class="control-btn">Next ➡️</button>
           <button id="shuffle-cards-btn" class="control-btn">🔀 Shuffle</button>
         </div>
-      </div>
-    </div>
-
-    <!-- Learn Mode -->
-    <div id="learn-section" class="quiz-section hidden">
-      <div class="learn-container">
-        <div id="learn-select">
-          <label for="learn-quiz-select">Choose Quiz:</label>
-          <select id="learn-quiz-select">
-            <option value="">Select a quiz...</option>
-          </select>
-        </div>
-        <div class="learn-progress">
-          <div class="progress-bar">
-            <div id="learn-progress-fill" class="progress-fill"></div>
-          </div>
-          <div id="learn-stats">0 / 0 mastered</div>
-        </div>
-        <div id="learn-card" class="learn-card">
-          <div id="learn-question" class="learn-question"></div>
-          <div id="learn-options" class="learn-options"></div>
-          <button id="learn-submit-btn" class="learn-submit-btn">Submit</button>
-        </div>
-        <div id="learn-feedback" class="learn-feedback hidden">
-          <div id="learn-feedback-icon"></div>
-          <div id="learn-feedback-text"></div>
-          <button id="learn-next-btn" class="learn-next-btn">Continue</button>
+        <div class="mastery-controls hidden">
+          <button id="mastered-btn" class="mastery-btn mastered">✅ Mastered</button>
+          <button id="not-mastered-btn" class="mastery-btn not-mastered">❌ Still Learning</button>
         </div>
       </div>
     </div>

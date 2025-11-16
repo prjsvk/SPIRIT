@@ -1,61 +1,48 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // Elements
-  const playModeBtn = document.getElementById('play-mode-btn');
-  const createModeBtn = document.getElementById('create-mode-btn');
-  const flashcardModeBtn = document.getElementById('flashcard-mode-btn');
-  const learnModeBtn = document.getElementById('learn-mode-btn');
+// Elements
+const playModeBtn = document.getElementById('play-mode-btn');
+const createModeBtn = document.getElementById('create-mode-btn');
+const flashcardModeBtn = document.getElementById('flashcard-mode-btn');
 
-  const playSection = document.getElementById('play-section');
-  const createSection = document.getElementById('create-section');
-  const flashcardSection = document.getElementById('flashcard-section');
-  const learnSection = document.getElementById('learn-section');
+const playSection = document.getElementById('play-section');
+const createSection = document.getElementById('create-section');
+const flashcardSection = document.getElementById('flashcard-section');
 
-  // Play mode elements
-  const quizSelect = document.getElementById('quiz-select');
-  const questionElement = document.getElementById('question');
-  const optionsElement = document.getElementById('options');
-  const feedbackElement = document.getElementById('feedback');
-  const feedbackIcon = document.getElementById('feedback-icon');
-  const feedbackText = document.getElementById('feedback-text');
-  const scoreElement = document.getElementById('score');
-  const streakElement = document.getElementById('streak');
-  const progressElement = document.getElementById('progress');
-  const timerBar = document.getElementById('timer-fill');
-  const timerText = document.getElementById('timer-text');
-  const questionNumber = document.getElementById('question-number');
-  const pointsWorth = document.getElementById('points-worth');
+// Play mode elements
+const quizSelect = document.getElementById('quiz-select');
+const questionElement = document.getElementById('question');
+const optionsElement = document.getElementById('options');
+const feedbackElement = document.getElementById('feedback');
+const feedbackIcon = document.getElementById('feedback-icon');
+const feedbackText = document.getElementById('feedback-text');
+const scoreElement = document.getElementById('score');
+const streakElement = document.getElementById('streak');
+const progressElement = document.getElementById('progress');
+const timerBar = document.getElementById('timer-fill');
+const timerText = document.getElementById('timer-text');
+const questionNumber = document.getElementById('question-number');
+const pointsWorth = document.getElementById('points-worth');
 
-  // Flashcard mode elements
-  const flashcardQuizSelect = document.getElementById('flashcard-quiz-select');
-  const flashcard = document.getElementById('flashcard');
-  const flashcardQuestion = document.getElementById('flashcard-question');
-  const flashcardAnswer = document.getElementById('flashcard-answer');
-  const flipCardBtn = document.getElementById('flip-card-btn');
-  const prevCardBtn = document.getElementById('prev-card-btn');
-  const nextCardBtn = document.getElementById('next-card-btn');
-  const shuffleCardsBtn = document.getElementById('shuffle-cards-btn');
-  const cardCounter = document.getElementById('card-counter');
-  const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+// Flashcard mode elements
+const flashcardQuizSelect = document.getElementById('flashcard-quiz-select');
+const flashcard = document.getElementById('flashcard');
+const flashcardQuestion = document.getElementById('flashcard-question');
+const flashcardAnswer = document.getElementById('flashcard-answer');
+const prevCardBtn = document.getElementById('prev-card-btn');
+const nextCardBtn = document.getElementById('next-card-btn');
+const shuffleCardsBtn = document.getElementById('shuffle-cards-btn');
+const cardCounter = document.getElementById('card-counter');
+const masteryControls = document.getElementById('mastery-controls');
+const masteredBtn = document.getElementById('mastered-btn');
+const notMasteredBtn = document.getElementById('not-mastered-btn');
 
-  // Learn mode elements
-  const learnQuizSelect = document.getElementById('learn-quiz-select');
-  const learnProgressFill = document.getElementById('learn-progress-fill');
-  const learnStats = document.getElementById('learn-stats');
-  const learnQuestion = document.getElementById('learn-question');
-  const learnOptions = document.getElementById('learn-options');
-  const learnSubmitBtn = document.getElementById('learn-submit-btn');
-  const learnFeedback = document.getElementById('learn-feedback');
-  const learnFeedbackIcon = document.getElementById('learn-feedback-icon');
-  const learnFeedbackText = document.getElementById('learn-feedback-text');
-  const learnNextBtn = document.getElementById('learn-next-btn');
+// Continue button
+const continueBtn = document.getElementById('continue-btn');
 
-  // Create mode elements
-  const quizTitleInput = document.getElementById('quiz-title');
-  const questionTypeSelect = document.getElementById('question-type-select');
-  const questionTypeDescription = document.getElementById('question-type-description');
-  const questionsList = document.getElementById('questions-list');
-  const addQuestionBtn = document.getElementById('add-question-btn');
-  const saveQuizBtn = document.getElementById('save-quiz-btn');
+// Create mode elements
+const quizTitleInput = document.getElementById('quiz-title');
+const questionsList = document.getElementById('questions-list');
+const addQuestionBtn = document.getElementById('add-question-btn');
+const saveQuizBtn = document.getElementById('save-quiz-btn');
 
   // Game state
   let currentQuestion = null;
@@ -69,29 +56,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Flashcard state
   let flashcardCards = [];
-  let currentCardIndex = 0;
+  let studyQueue = [];
+  let currentStudyIndex = 0;
   let isFlipped = false;
-
-  // Learn mode state
-  let learnCards = [];
-  let learnCurrentIndex = 0;
-  let learnMastered = 0;
-  let learnTotal = 0;
 
   // Mode switching
   playModeBtn.addEventListener('click', () => switchMode('play'));
   createModeBtn.addEventListener('click', () => switchMode('create'));
   flashcardModeBtn.addEventListener('click', () => switchMode('flashcard'));
-  learnModeBtn.addEventListener('click', () => switchMode('learn'));
 
   function switchMode(mode) {
     // Remove active class from all buttons
-    [playModeBtn, createModeBtn, flashcardModeBtn, learnModeBtn].forEach(btn => {
+    [playModeBtn, createModeBtn, flashcardModeBtn].forEach(btn => {
       btn.classList.remove('active');
     });
 
     // Hide all sections
-    [playSection, createSection, flashcardSection, learnSection].forEach(section => {
+    [playSection, createSection, flashcardSection].forEach(section => {
       section.classList.add('hidden');
     });
 
@@ -112,11 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
         flashcardModeBtn.classList.add('active');
         flashcardSection.classList.remove('hidden');
         loadFlashcardOptions();
-        break;
-      case 'learn':
-        learnModeBtn.classList.add('active');
-        learnSection.classList.remove('hidden');
-        loadLearnOptions();
         break;
     }
   }
@@ -143,17 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Load quiz options for learn mode
-  function loadLearnOptions() {
-    learnQuizSelect.innerHTML = '<option value="">Select a quiz...</option>';
-    customQuizzes.forEach((quiz, index) => {
-      const option = document.createElement('option');
-      option.value = index;
-      option.textContent = quiz.title;
-      learnQuizSelect.appendChild(option);
-    });
-  }
-
   // Play quiz functionality
   async function fetchQuestion() {
     const selectedQuiz = quizSelect.value;
@@ -172,20 +137,33 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       // Play custom quiz
       const quizIndex = parseInt(selectedQuiz);
-      if (customQuizzes[quizIndex] && currentQuestionIndex < customQuizzes[quizIndex].questions.length) {
-        currentQuestion = customQuizzes[quizIndex].questions[currentQuestionIndex];
-        currentQuiz = customQuizzes[quizIndex].questions;
+      if (customQuizzes[quizIndex]) {
+        // Filter out mastered questions for rotation
+        currentQuiz = customQuizzes[quizIndex].questions.filter(q => q.mastery !== 'mastered');
+        // If all mastered, show results
+        if (currentQuiz.length === 0) {
+          showFinalResults();
+          return;
+        }
+        // If currentQuestionIndex out of bounds, reset
+        if (currentQuestionIndex >= currentQuiz.length) {
+          currentQuestionIndex = 0;
+        }
+        currentQuestion = currentQuiz[currentQuestionIndex];
         displayQuestion(currentQuestion);
         resetTimer();
       } else {
-        // Quiz finished
         showFinalResults();
       }
     }
   }
 
   function displayQuestion(question) {
-    questionNumber.textContent = `Question ${currentQuestionIndex + 1}`;
+  // Dynamic numbering: show current/total for remaining questions
+  let displayIndex = currentQuestionIndex + 1;
+  let displayTotal = currentQuiz.length;
+  if (displayIndex > displayTotal) displayIndex = displayTotal;
+  questionNumber.textContent = `${displayIndex} / ${displayTotal}`;
     pointsWorth.textContent = `+${calculatePoints()} points`;
 
     if (question.type === 'multiple-choice' && question.options) {
@@ -232,18 +210,25 @@ document.addEventListener('DOMContentLoaded', () => {
   function selectAnswer(selectedAnswer, correctAnswer) {
     clearInterval(timer);
     const isCorrect = selectedAnswer.toLowerCase().trim() === correctAnswer.toLowerCase().trim();
+    const points = calculatePoints();
 
     if (isCorrect) {
-      score += calculatePoints();
+      score += points;
       streak++;
-      showFeedback(true, `Correct! +${calculatePoints()} points`);
+      showFeedback(true, `Correct! +${points} points`);
     } else {
+      score -= points;
       streak = 0;
-      showFeedback(false, `Incorrect. The answer was: ${correctAnswer}`);
+      showFeedback(false, `Incorrect. The answer was: ${correctAnswer} -${points} points`);
     }
 
     updateStats();
-    setTimeout(nextQuestion, 2000);
+    let continueTimeout = setTimeout(nextQuestion, 2000);
+    continueBtn.onclick = () => {
+      clearTimeout(continueTimeout);
+      feedbackElement.classList.add('hidden');
+      nextQuestion();
+    };
   }
 
   function showFeedback(isCorrect, message) {
@@ -301,14 +286,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function nextQuestion() {
     feedbackElement.classList.add('hidden');
-    currentQuestionIndex++;
+    // Remove mastered questions from rotation (handled in fetchQuestion)
+    // If 'Still Learning', keep in rotation and repeat until final round
+    if (currentQuestion && currentQuestion.mastery === 'still-learning') {
+      currentQuestionIndex++;
+      if (currentQuestionIndex >= currentQuiz.length) {
+        currentQuestionIndex = 0;
+      }
+    } else {
+      // Move to next question
+      currentQuestionIndex++;
+    }
     fetchQuestion();
   }
 
   function updateStats() {
-    scoreElement.textContent = `Score: ${score}`;
-    streakElement.textContent = `🔥 Streak: ${streak}`;
-    progressElement.textContent = `Progress: ${currentQuestionIndex + 1}/${currentQuiz.length}`;
+  scoreElement.textContent = `Score: ${score}`;
+  streakElement.textContent = `🔥 Streak: ${streak}`;
+  progressElement.textContent = `Progress: ${currentQuestionIndex + 1}/${currentQuiz.length}`;
   }
 
   function showFinalResults() {
@@ -342,50 +337,53 @@ document.addEventListener('DOMContentLoaded', () => {
     if (quizIndex === '') return;
 
     const quiz = customQuizzes[parseInt(quizIndex)];
-    flashcardCards = [...quiz.questions];
-    currentCardIndex = 0;
-    isFlipped = false;
+  // Only include cards not mastered
+  flashcardCards = [...quiz.questions];
+  studyQueue = flashcardCards.map((card, i) => card.mastery !== 'mastered' ? i : null).filter(i => i !== null);
+  currentStudyIndex = 0;
+  isFlipped = false;
 
-    shuffleCards();
-    showCurrentCard();
+  shuffleCards();
+  showCurrentCard();
   }
 
   function showCurrentCard() {
-    if (flashcardCards.length === 0) return;
+    if (studyQueue.length === 0) {
+      showMasteryComplete();
+      return;
+    }
 
-    const card = flashcardCards[currentCardIndex];
+    const cardIndex = studyQueue[currentStudyIndex];
+    const card = flashcardCards[cardIndex];
     flashcardQuestion.textContent = card.question;
     flashcardAnswer.textContent = card.answer || card.correctAnswer || 'No answer provided';
 
     flashcard.classList.remove('flipped');
     isFlipped = false;
-    flipCardBtn.textContent = '👁️ Show Answer';
+    masteryControls.classList.add('hidden');
 
-    cardCounter.textContent = `${currentCardIndex + 1} / ${flashcardCards.length}`;
+    updateCardCounter();
   }
 
-  flipCardBtn.addEventListener('click', () => {
+  // Add click event to the flashcard itself to flip it
+  flashcard.addEventListener('click', () => {
     if (!isFlipped) {
       flashcard.classList.add('flipped');
-      flipCardBtn.textContent = '🔄 Flip Back';
       isFlipped = true;
-    } else {
-      flashcard.classList.remove('flipped');
-      flipCardBtn.textContent = '👁️ Show Answer';
-      isFlipped = false;
+      masteryControls.classList.remove('hidden');
     }
   });
 
   prevCardBtn.addEventListener('click', () => {
-    if (currentCardIndex > 0) {
-      currentCardIndex--;
+    if (currentStudyIndex > 0) {
+      currentStudyIndex--;
       showCurrentCard();
     }
   });
 
   nextCardBtn.addEventListener('click', () => {
-    if (currentCardIndex < flashcardCards.length - 1) {
-      currentCardIndex++;
+    if (currentStudyIndex < studyQueue.length - 1) {
+      currentStudyIndex++;
       showCurrentCard();
     }
   });
@@ -393,164 +391,68 @@ document.addEventListener('DOMContentLoaded', () => {
   shuffleCardsBtn.addEventListener('click', shuffleCards);
 
   function shuffleCards() {
-    for (let i = flashcardCards.length - 1; i > 0; i--) {
+    // Shuffle the study queue
+    for (let i = studyQueue.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [flashcardCards[i], flashcardCards[j]] = [flashcardCards[j], flashcardCards[i]];
+      [studyQueue[i], studyQueue[j]] = [studyQueue[j], studyQueue[i]];
     }
-    currentCardIndex = 0;
+    currentStudyIndex = 0;
     showCurrentCard();
   }
 
-  difficultyButtons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const difficulty = parseInt(e.target.dataset.difficulty);
-      // In a real implementation, this would affect spaced repetition
-      console.log(`Card marked as difficulty: ${difficulty}`);
-      nextCardBtn.click();
-    });
-  });
+  function updateCardCounter() {
+    const totalCards = flashcardCards.length;
+    const remainingCards = studyQueue.length;
+    const masteredCount = totalCards - remainingCards;
 
-  // Learn mode functionality
-  learnQuizSelect.addEventListener('change', loadLearnQuiz);
-
-  function loadLearnQuiz() {
-    const quizIndex = learnQuizSelect.value;
-    if (quizIndex === '') return;
-
-    const quiz = customQuizzes[parseInt(quizIndex)];
-    learnCards = [...quiz.questions].map(card => ({
-      ...card,
-      mastered: false,
-      difficulty: 1 // 1 = hard, 2 = medium, 3 = easy
-    }));
-
-    learnCurrentIndex = 0;
-    learnMastered = 0;
-    learnTotal = learnCards.length;
-
-    updateLearnProgress();
-    showLearnQuestion();
+    if (remainingCards === 0) {
+      cardCounter.textContent = `All ${totalCards} mastered!`;
+    } else {
+      const currentCardNumber = currentStudyIndex + 1;
+      cardCounter.textContent = `${currentCardNumber} / ${remainingCards}`;
+    }
   }
 
-  function showLearnQuestion() {
-    if (learnCurrentIndex >= learnCards.length) {
-      showLearnComplete();
-      return;
-    }
+  // Mastery button event listeners
+  masteredBtn.addEventListener('click', () => markCardAsMastered(true));
+  notMasteredBtn.addEventListener('click', () => markCardAsMastered(false));
 
-    const card = learnCards[learnCurrentIndex];
-    learnQuestion.textContent = card.question;
-
-    // Create multiple choice options
-    const options = generateLearnOptions(card);
-    learnOptions.innerHTML = '';
-
-    options.forEach(option => {
-      const optionDiv = document.createElement('div');
-      optionDiv.className = 'learn-option';
-      optionDiv.textContent = option;
-      optionDiv.addEventListener('click', () => selectLearnAnswer(option, card));
-      learnOptions.appendChild(optionDiv);
-    });
-
-    learnFeedback.classList.add('hidden');
-  }
-
-  function generateLearnOptions(correctCard) {
-    const options = [correctCard.answer || correctCard.correctAnswer];
-    const allAnswers = learnCards.map(card => card.answer || card.correctAnswer);
-
-    // Add 3 random wrong answers
-    while (options.length < 4 && allAnswers.length > options.length) {
-      const randomAnswer = allAnswers[Math.floor(Math.random() * allAnswers.length)];
-      if (!options.includes(randomAnswer)) {
-        options.push(randomAnswer);
-      }
-    }
-
-    // Shuffle options
-    for (let i = options.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [options[i], options[j]] = [options[j], options[i]];
-    }
-
-    return options;
-  }
-
-  function selectLearnAnswer(selectedAnswer, correctCard) {
-    const correctAnswer = correctCard.answer || correctCard.correctAnswer;
-    const isCorrect = selectedAnswer === correctAnswer;
-
-    // Update card difficulty based on answer
-    if (isCorrect) {
-      correctCard.difficulty = Math.min(3, correctCard.difficulty + 1);
-      if (correctCard.difficulty >= 3) {
-        correctCard.mastered = true;
-        learnMastered++;
+  function markCardAsMastered(isMastered) {
+    if (isMastered) {
+      // Remove the current card from study queue (mastered)
+      const cardIndex = studyQueue[currentStudyIndex];
+      flashcardCards[cardIndex].mastery = 'mastered';
+      studyQueue.splice(currentStudyIndex, 1);
+      // Adjust index if necessary
+      if (currentStudyIndex >= studyQueue.length && studyQueue.length > 0) {
+        currentStudyIndex = studyQueue.length - 1;
       }
     } else {
-      correctCard.difficulty = Math.max(1, correctCard.difficulty - 1);
+      // Mark as still learning and move to next card
+      const cardIndex = studyQueue[currentStudyIndex];
+      flashcardCards[cardIndex].mastery = 'still-learning';
+      if (currentStudyIndex < studyQueue.length - 1) {
+        currentStudyIndex++;
+      }
     }
 
-    showLearnFeedback(isCorrect, correctAnswer);
-    updateLearnProgress();
+    // Show next card or completion
+    if (studyQueue.length === 0) {
+      showMasteryComplete();
+    } else {
+      showCurrentCard();
+    }
   }
 
-  function showLearnFeedback(isCorrect, correctAnswer) {
-    learnFeedback.className = `learn-feedback ${isCorrect ? 'correct' : 'incorrect'}`;
-    learnFeedbackIcon.textContent = isCorrect ? '✅' : '❌';
-    learnFeedbackText.textContent = isCorrect ?
-      'Correct! Well done.' :
-      `Incorrect. The answer was: ${correctAnswer}`;
-
-    learnFeedback.classList.remove('hidden');
-  }
-
-  learnNextBtn.addEventListener('click', () => {
-    learnCurrentIndex++;
-    showLearnQuestion();
-  });
-
-  function updateLearnProgress() {
-    const progress = (learnMastered / learnTotal) * 100;
-    learnProgressFill.style.width = `${progress}%`;
-    learnStats.textContent = `${learnMastered} / ${learnTotal} mastered`;
-  }
-
-  function showLearnComplete() {
-    learnQuestion.textContent = '🎉 Congratulations!';
-    learnOptions.innerHTML = '<div class="learn-option">You\'ve mastered all the cards in this quiz!</div>';
-    learnFeedback.classList.add('hidden');
+  function showMasteryComplete() {
+    flashcardQuestion.textContent = '🎉 Congratulations!';
+    flashcardAnswer.textContent = `You've mastered all ${flashcardCards.length} cards in this quiz!`;
+    flashcard.classList.add('flipped');
+    masteryControls.classList.add('hidden');
+    cardCounter.textContent = `All ${flashcardCards.length} mastered!`;
   }
 
   // Create quiz functionality
-  function updateQuestionTypeDescription() {
-    const questionType = questionTypeSelect.value;
-    let description = '';
-
-    switch(questionType) {
-      case 'multiple-choice':
-        description = '📝 Multiple choice questions - add as many options as you want!';
-        break;
-      case 'true-false':
-        description = '✅ True or False questions - select the correct answer';
-        break;
-      case 'fill-blank':
-        description = '📝 Fill in the blank - students type their answer';
-        break;
-      case 'short-answer':
-        description = '✍️ Short answer questions - open-ended responses';
-        break;
-    }
-
-    questionTypeDescription.textContent = description;
-  }
-
-  // Initialize question type description
-  updateQuestionTypeDescription();
-
-  // Update description when question type changes
-  questionTypeSelect.addEventListener('change', updateQuestionTypeDescription);
   function renderQuestionsList() {
     questionsList.innerHTML = '';
     const questions = getCurrentQuestions();
@@ -560,6 +462,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (q.type === 'true-false') {
         questionItem.innerHTML = `
+          <select class="question-type-per-item" data-index="${index}">
+            <option value="multiple-choice">Multiple Choice</option>
+            <option value="true-false" selected>True/False</option>
+            <option value="fill-blank">Fill in the Blank</option>
+            <option value="short-answer">Short Answer</option>
+          </select>
           <input type="text" class="question-input" placeholder="Example: The sky is blue." value="${q.question || ''}">
           <div class="true-false-options">
             <label><input type="radio" name="answer-${index}" value="true" ${q.answer === 'true' ? 'checked' : ''}> True</label>
@@ -577,15 +485,27 @@ document.addEventListener('DOMContentLoaded', () => {
         `).join('');
 
         questionItem.innerHTML = `
+          <select class="question-type-per-item" data-index="${index}">
+            <option value="multiple-choice" selected>Multiple Choice</option>
+            <option value="true-false">True/False</option>
+            <option value="fill-blank">Fill in the Blank</option>
+            <option value="short-answer">Short Answer</option>
+          </select>
           <input type="text" class="question-input" placeholder="What is the capital of France?" value="${q.question || ''}">
           <div class="multiple-choice-options">
             ${optionsHtml}
           </div>
           <button class="add-option-btn">+ Add Option</button>
-          <button class="delete-question-btn" data-index="${index}">Delete Question</button>
+          <button class="delete-question-btn">Delete Question</button>
         `;
       } else {
         questionItem.innerHTML = `
+          <select class="question-type-per-item" data-index="${index}">
+            <option value="multiple-choice">Multiple Choice</option>
+            <option value="true-false">True/False</option>
+            <option value="fill-blank" ${q.type === 'fill-blank' ? 'selected' : ''}>Fill in the Blank</option>
+            <option value="short-answer" ${q.type === 'short-answer' ? 'selected' : ''}>Short Answer</option>
+          </select>
           <input type="text" class="question-input" placeholder="Question" value="${q.question || ''}">
           <input type="text" class="answer-input" placeholder="Answer" value="${q.answer || ''}">
           <button class="delete-question-btn" data-index="${index}">Delete</button>
@@ -599,22 +519,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.question-item').forEach(item => {
       setupQuestionItemEvents(item);
     });
-
-    // Add event listeners for delete buttons
-    document.querySelectorAll('.delete-question-btn[data-index]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const index = parseInt(e.target.dataset.index);
-        deleteQuestion(index);
-      });
-    });
   }
 
   function getCurrentQuestions() {
     return Array.from(document.querySelectorAll('.question-item')).map(item => {
       const question = item.querySelector('.question-input').value;
-      const questionType = item.querySelector('.multiple-choice-options') ? 'multiple-choice' : 
-                          item.querySelector('.true-false-options') ? 'true-false' : 
-                          questionTypeSelect.value;
+      const typeSelect = item.querySelector('.question-type-per-item');
+      const questionType = typeSelect ? typeSelect.value : 'multiple-choice';
 
       let answer, options = [], correctIndex = 0;
 
@@ -643,12 +554,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function addQuestion() {
-    const questionType = questionTypeSelect.value;
+    const questionType = 'multiple-choice';
     const questionItem = document.createElement('div');
     questionItem.className = 'question-item';
 
     if (questionType === 'true-false') {
       questionItem.innerHTML = `
+        <select class="question-type-per-item" data-index="${document.querySelectorAll('.question-item').length}">
+          <option value="multiple-choice">Multiple Choice</option>
+          <option value="true-false" selected>True/False</option>
+          <option value="fill-blank">Fill in the Blank</option>
+          <option value="short-answer">Short Answer</option>
+        </select>
         <input type="text" class="question-input" placeholder="Example: The sky is blue.">
         <div class="true-false-options">
           <label><input type="radio" name="answer-${Date.now()}" value="true" checked> True</label>
@@ -658,6 +575,12 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     } else if (questionType === 'multiple-choice') {
       questionItem.innerHTML = `
+        <select class="question-type-per-item" data-index="${document.querySelectorAll('.question-item').length}">
+          <option value="multiple-choice" selected>Multiple Choice</option>
+          <option value="true-false">True/False</option>
+          <option value="fill-blank">Fill in the Blank</option>
+          <option value="short-answer">Short Answer</option>
+        </select>
         <input type="text" class="question-input" placeholder="What is the capital of France?">
         <div class="multiple-choice-options">
           <div class="option-input-group">
@@ -686,6 +609,12 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
     } else {
       questionItem.innerHTML = `
+        <select class="question-type-per-item" data-index="${document.querySelectorAll('.question-item').length}">
+          <option value="multiple-choice">Multiple Choice</option>
+          <option value="true-false">True/False</option>
+          <option value="fill-blank" ${questionType === 'fill-blank' ? 'selected' : ''}>Fill in the Blank</option>
+          <option value="short-answer" ${questionType === 'short-answer' ? 'selected' : ''}>Short Answer</option>
+        </select>
         <input type="text" class="question-input" placeholder="Question">
         <input type="text" class="answer-input" placeholder="Answer">
         <button class="delete-question-btn">Delete</button>
@@ -704,6 +633,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (deleteBtn) {
       deleteBtn.addEventListener('click', () => {
         questionItem.remove();
+      });
+    }
+
+    // Question type change
+    const typeSelect = questionItem.querySelector('.question-type-per-item');
+    if (typeSelect) {
+      typeSelect.addEventListener('change', (e) => {
+        const newType = e.target.value;
+        changeQuestionType(questionItem, newType);
       });
     }
 
@@ -767,10 +705,76 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function deleteQuestion(index) {
-    const questions = getCurrentQuestions();
-    questions.splice(index, 1);
-    renderQuestionsList();
+  function changeQuestionType(questionItem, newType) {
+    const questionInput = questionItem.querySelector('.question-input');
+    const oldQuestion = questionInput ? questionInput.value : '';
+    const index = Array.from(questionItem.parentNode.children).indexOf(questionItem);
+
+    if (newType === 'multiple-choice') {
+      questionItem.innerHTML = `
+        <select class="question-type-per-item" data-index="${index}">
+          <option value="multiple-choice" selected>Multiple Choice</option>
+          <option value="true-false">True/False</option>
+          <option value="fill-blank">Fill in the Blank</option>
+          <option value="short-answer">Short Answer</option>
+        </select>
+        <input type="text" class="question-input" placeholder="What is the capital of France?" value="${oldQuestion}">
+        <div class="multiple-choice-options">
+          <div class="option-input-group">
+            <input type="radio" name="correct-${Date.now()}" value="0" checked>
+            <input type="text" class="option-input" placeholder="Option A" value="Option A">
+            <button class="remove-option-btn">×</button>
+          </div>
+          <div class="option-input-group">
+            <input type="radio" name="correct-${Date.now()}" value="1">
+            <input type="text" class="option-input" placeholder="Option B" value="Option B">
+            <button class="remove-option-btn">×</button>
+          </div>
+          <div class="option-input-group">
+            <input type="radio" name="correct-${Date.now()}" value="2">
+            <input type="text" class="option-input" placeholder="Option C" value="Option C">
+            <button class="remove-option-btn">×</button>
+          </div>
+          <div class="option-input-group">
+            <input type="radio" name="correct-${Date.now()}" value="3">
+            <input type="text" class="option-input" placeholder="Option D" value="Option D">
+            <button class="remove-option-btn">×</button>
+          </div>
+        </div>
+        <button class="add-option-btn">+ Add Option</button>
+        <button class="delete-question-btn">Delete Question</button>
+      `;
+    } else if (newType === 'true-false') {
+      questionItem.innerHTML = `
+        <select class="question-type-per-item" data-index="${index}">
+          <option value="multiple-choice">Multiple Choice</option>
+          <option value="true-false" selected>True/False</option>
+          <option value="fill-blank">Fill in the Blank</option>
+          <option value="short-answer">Short Answer</option>
+        </select>
+        <input type="text" class="question-input" placeholder="Example: The sky is blue." value="${oldQuestion}">
+        <div class="true-false-options">
+          <label><input type="radio" name="answer-${Date.now()}" value="true" checked> True</label>
+          <label><input type="radio" name="answer-${Date.now()}" value="false"> False</label>
+        </div>
+        <button class="delete-question-btn">Delete</button>
+      `;
+    } else {
+      questionItem.innerHTML = `
+        <select class="question-type-per-item" data-index="${index}">
+          <option value="multiple-choice">Multiple Choice</option>
+          <option value="true-false">True/False</option>
+          <option value="fill-blank" ${newType === 'fill-blank' ? 'selected' : ''}>Fill in the Blank</option>
+          <option value="short-answer" ${newType === 'short-answer' ? 'selected' : ''}>Short Answer</option>
+        </select>
+        <input type="text" class="question-input" placeholder="Question" value="${oldQuestion}">
+        <input type="text" class="answer-input" placeholder="Answer">
+        <button class="delete-question-btn">Delete</button>
+      `;
+    }
+
+    // Re-attach event listeners
+    setupQuestionItemEvents(questionItem);
   }
 
   function saveQuiz() {
@@ -801,7 +805,6 @@ document.addEventListener('DOMContentLoaded', () => {
     questionsList.innerHTML = '';
     loadQuizOptions();
     loadFlashcardOptions();
-    loadLearnOptions();
   }
 
   // Event listeners
@@ -809,7 +812,6 @@ document.addEventListener('DOMContentLoaded', () => {
   saveQuizBtn.addEventListener('click', saveQuiz);
 
   // Initialize
-  switchMode('play');
+  switchMode('create');
   loadQuizOptions();
   updateStats();
-});

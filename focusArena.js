@@ -119,32 +119,10 @@ async function monitorFocus() {
         document.getElementById("status").innerText = "Face detected. Timer resumed 🧠";
       }
       if(lookAwayCount>0) lookAwayCount = 0;
-    } else {
-      // No face detected - pause timer
-      faceDetected = false;
-      if (!timerPausedByFaceDetection && !manuallyPaused && !breakActive) {
-        timerPausedByFaceDetection = true;
-        document.getElementById("status").innerText = "Face not detected. Timer paused ⏸️";
-      }
     }
-  }catch(e){ console.warn('monitorFocus error', e); }
-}
-function startBreakCycle() {
-  breakActive = true;
-  clearTimeout(timerInterval);
-  document.getElementById("status").innerText = "Break time! ⏳ (2m 30s)";
-  secondsLeft = 150;
-  updateTimerDisplay();
-  breakTimer = setInterval(() => {
-    secondsLeft--;
-    updateTimerDisplay();
-    if (secondsLeft <= 0) {
-      breakActive = false;
-      clearInterval(breakTimer);
-      document.getElementById("status").innerText = "Break over. Back to focus!";
-      startFocusSession(); // resume
-    }
-  }, 1000);
+  } catch(e) {
+    console.warn('monitorFocus error', e);
+  }
 }
 function startTimerInterval(){
   // set or restart the main focus timer loop using a serial async tick to avoid overlapping
